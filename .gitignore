@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# expo / native
+.expo/
+android/
+ios/
+*.apk
+*.aab
+
+# logs
+*.log
+npm-debug.log*
+
+# editors / os
+.DS_Store
+.idea/
+.vscode/
