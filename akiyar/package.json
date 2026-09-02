@@ -1,1 +1,38 @@
-{"name":"akiyar-recovery-verify","private":true,"type":"module","dependencies":{"zod":"^4.5.4"}}
+{
+  "name": "akiyar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Akiyar — supporter register and mobilisation platform for the Turkana County senate campaign.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/register-shim.mjs scripts/check-integrity.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "db:verify": "node scripts/db/verify-migrations.mjs",
+    "db:verify:rls": "node scripts/db/verify-rls.mjs",
+    "db:bundle": "node scripts/db/bundle.mjs",
+    "backup": "git push backup --prune --force --all && git push backup --force --tags"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.8",
+    "next": "16.2.11",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.7",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.11",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

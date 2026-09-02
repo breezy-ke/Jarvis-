@@ -1,2 +1,63 @@
-node_modules/
-.next/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files — secrets never get committed, but the template must be
+.env*
+!.env.example
+
+# real IEBC register extracts: personal-adjacent bulk data, keep out of git
+/data
+
+# raw campaign photography — hundreds of MB of source images. The processed
+# versions that the site actually serves live in public/campaign/.
+# Back these up to a drive, not to git: once committed they are in history forever.
+/updated Images/
+/InShot_*.jpg.jpeg
+*.JPG.jpeg
+
+# local agent/editor config — launch.json is shared, the permission allowlist is personal
+.claude/settings.local.json
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# design-tool scratch state (question cache, hook cache) — machine-local, not shared
+/.impeccable/
+
+# generated SQL bundles — derived from supabase/migrations and supabase/seed.
+# A stale bundle that looks authoritative is worse than no bundle; regenerate
+# with `npm run db:bundle`.
+/supabase/bundle/
