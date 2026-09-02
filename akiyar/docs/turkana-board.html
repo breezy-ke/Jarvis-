@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Akiyar command brief for the Ekusi Lore Turkana Senate campaign. Internal.">
+<!--
+  Akiyar — command brief for Hon. Ekusi Lore, Turkana County Senate 2027.
+
+  Standalone. Open it in a browser; there is no build step and no network
+  dependency except the Archivo webfont, which degrades to the system stack.
+
+  WHAT IS REAL AND WHAT IS NOT
+    Real, from the IEBC register (supabase/seed/0001_geography_turkana.sql):
+      6 constituencies, 30 wards, 559 polling stations, 238,528 registered
+      voters, every ward denominator and every polling-station name.
+    Illustrative, from the demo engine (src/lib/demo.ts, mulberry32 seed 4242):
+      every supporter count. These are not real people.
+    Assumptions, argued for on the page and not measured:
+      the four conversion rates in the reach model.
+
+  Colours and type are the shipped tokens in src/app/globals.css. If those
+  change, change them here too — this file deliberately restates them rather
+  than importing, so it stays openable with no build.
+-->
+<title>The Turkana Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<style>
+/* ============================================================================
+   The Turkana Board — Akiyar / Ekusi Lore, Senate 2027
+   Tokens are the shipped Akiyar system (src/app/globals.css), not new ones.
+
+   THE ORANGE RULE, which shapes everything below.
+   ODM orange #f47b20 measures 2.61:1 on paper. It cannot carry text on a light
+   ground. So --signal (#9f5015) is the party orange darkened until it clears AA
+   — 5.54:1 as text, and 5.54:1 the other way round with --screen on top of it —
+   and --signal-fill (#f47b20) is the party's actual colour, kept for bands,
+   rules, tiles and meters where nothing is read on top.
+   On the dark ground that bill is already paid: there #f47b20 measures 7.43:1
+   and carries text itself. That is why this page has two real palettes rather
+   than one inverted one.
+   ========================================================================== */
+
+:root{
+  --screen:#fbfaf8;  --ink-800:#f2efe9;  --ink-700:#ffffff;  --ink-600:#f4f1ec;
+  --signal:#9f5015;         /* orange that may carry text */
+  --signal-fill:#f47b20;    /* the party's orange — surfaces only */
+  --signal-deep:#7a3e10;
+  --signal-bright:#c3621a;
+  --verified:#157f4a;  --alarm:#b3261e;  --warn:#8a5a00;
+  --type:#14181f;  --type-mid:#4a5260;  --type-low:#6b7381;
+  --hairline:rgba(20,24,31,.13);
+  --hairline-soft:rgba(20,24,31,.065);
+  --field-line:#767c86;
+
+  /* saturation ramp — one hue, light to dark. Validated for CVD separation and
+     for normal-vision separation against this exact ground. */
+  --sat-cold:#ffc98a;  --sat-working:#f47b20;  --sat-holding:#7a3e10;
+  --sat-track:rgba(20,24,31,.06);
+  --sat-none:rgba(20,24,31,.1);
+
+  --tile-ink:#14181f;        /* label on a cold tile */
+  --tile-ink-deep:#fbfaf8;   /* label on a holding tile */
+
+  --lift:0 1px 2px rgba(20,24,31,.045), 0 10px 30px -16px rgba(20,24,31,.16);
+  --lift-hi:0 2px 4px rgba(20,24,31,.06), 0 22px 48px -20px rgba(20,24,31,.26);
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-drawer:cubic-bezier(.32,.72,0,1);
+
+  --r-sm:2px; --r-md:2px; --r-lg:3px;
+  --measure:68ch;  --wide:1180px;
+  --bar-h:52px;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --screen:#05060a;  --ink-800:#0a0c12;  --ink-700:#11141c;  --ink-600:#1a1e28;
+    --signal:#f47b20;         /* on black the party orange carries text: 7.43:1 */
+    --signal-fill:#f47b20;  --signal-deep:#c3621a;  --signal-bright:#ff9445;
+    --verified:#35c46f;  --alarm:#ff6b61;  --warn:#e0a53a;
+    --type:#f4f2ee;  --type-mid:#b2b8c4;  --type-low:#868d9c;
+    --hairline:rgba(244,242,238,.14);
+    --hairline-soft:rgba(244,242,238,.065);
+    --field-line:#6f7787;
+    --sat-cold:#9c5312;  --sat-working:#f47b20;  --sat-holding:#ffc08a;
+    --sat-track:rgba(244,242,238,.08);
+    --sat-none:rgba(244,242,238,.12);
+    --tile-ink:#f4f2ee;  --tile-ink-deep:#20140a;
+    --lift:0 1px 2px rgba(0,0,0,.5), 0 12px 34px -18px rgba(0,0,0,.85);
+    --lift-hi:0 2px 6px rgba(0,0,0,.6), 0 26px 60px -22px rgba(0,0,0,.95);
+  }
+}
+:root[data-theme="dark"]{
+  --screen:#05060a;  --ink-800:#0a0c12;  --ink-700:#11141c;  --ink-600:#1a1e28;
+  --signal:#f47b20;  --signal-fill:#f47b20;  --signal-deep:#c3621a;  --signal-bright:#ff9445;
+  --verified:#35c46f;  --alarm:#ff6b61;  --warn:#e0a53a;
+  --type:#f4f2ee;  --type-mid:#b2b8c4;  --type-low:#868d9c;
+  --hairline:rgba(244,242,238,.14);
+  --hairline-soft:rgba(244,242,238,.065);
+  --field-line:#6f7787;
+  --sat-cold:#9c5312;  --sat-working:#f47b20;  --sat-holding:#ffc08a;
+  --sat-track:rgba(244,242,238,.08);
+  --sat-none:rgba(244,242,238,.12);
+  --tile-ink:#f4f2ee;  --tile-ink-deep:#20140a;
+  --lift:0 1px 2px rgba(0,0,0,.5), 0 12px 34px -18px rgba(0,0,0,.85);
+  --lift-hi:0 2px 6px rgba(0,0,0,.6), 0 26px 60px -22px rgba(0,0,0,.95);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+body{
+  margin:0; background:var(--screen); color:var(--type);
+  font-family:"Archivo","Archivo Narrow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px; line-height:1.62; font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+
+/* ---- the four registers: one family, driven by the width axis ----------- */
+.u-label{ font-weight:700; font-stretch:90%; text-transform:uppercase;
+          letter-spacing:.15em; font-size:.688rem; line-height:1.35; color:var(--type-low); }
+h1,h2,h3{ margin:0; text-wrap:balance; font-stretch:100% }
+h1{ font-weight:800; font-stretch:105%; font-size:clamp(2.5rem,6.6vw,4.4rem); line-height:1.005; letter-spacing:-.026em }
+h2{ font-weight:700; font-size:clamp(1.65rem,3.5vw,2.4rem); line-height:1.1; letter-spacing:-.018em }
+h3{ font-weight:700; font-size:1.075rem; line-height:1.34; letter-spacing:-.006em }
+p{ margin:0; text-wrap:pretty }
+a{ color:var(--signal); text-underline-offset:3px; text-decoration-thickness:1px }
+
+:where(a,button,input,select,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--signal); outline-offset:3px; border-radius:var(--r-sm);
+}
+
+.rule-lit{ height:1px; border:0; margin:0;
+  background:linear-gradient(90deg,var(--signal-fill) 0%,var(--signal-fill) 7%,var(--hairline) 44%,transparent 100%); }
+
+.shell{ max-width:var(--wide); margin:0 auto; padding:0 clamp(20px,4.5vw,44px) }
+.section{ padding-block:clamp(48px,7vw,90px) }
+.eyebrow{ display:flex; align-items:baseline; gap:12px; margin-bottom:18px }
+.eyebrow .n{ color:var(--signal); font-weight:700; font-stretch:90%; font-size:.688rem; letter-spacing:.15em }
+
+/* ---- the standing bar: the register, always on screen ------------------- */
+.topbar{
+  position:sticky; top:0; z-index:60; height:var(--bar-h);
+  background:color-mix(in srgb,var(--screen) 88%,transparent);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--hairline);
+}
+.topbar-in{ max-width:var(--wide); margin:0 auto; height:100%; padding:0 clamp(20px,4.5vw,44px);
+            display:flex; align-items:center; gap:clamp(10px,2.4vw,26px) }
+.tb-id{ display:flex; align-items:center; gap:9px; flex:none }
+.tb-id b{ font-weight:800; font-stretch:88%; letter-spacing:.11em; text-transform:uppercase;
+          font-size:.7rem; white-space:nowrap }
+.tb-sp{ flex:1 }
+.tb-stat{ display:flex; flex-direction:column; gap:0; line-height:1.12; flex:none }
+.tb-stat b{ font-weight:800; font-stretch:94%; font-size:.98rem; letter-spacing:-.012em }
+.tb-stat span{ font-size:.575rem; font-weight:700; font-stretch:86%; text-transform:uppercase;
+               letter-spacing:.1em; color:var(--type-low) }
+.tb-stat--lit b{ color:var(--signal) }
+.tb-div{ width:1px; align-self:stretch; margin-block:13px; background:var(--hairline); flex:none }
+@media (max-width:720px){ .tb-hide{ display:none } }
+
+.mark{ width:26px; height:26px; flex:none; border-radius:var(--r-sm);
+       background:var(--signal-fill); position:relative }
+.mark::after{ content:""; position:absolute; inset:6px; background:var(--screen);
+              clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%) }
+.mark--lg{ width:36px; height:36px }
+.mark--lg::after{ inset:8px }
+
+/* ---- masthead ---------------------------------------------------------- */
+.masthead{ padding-top:clamp(34px,5.5vw,62px); padding-bottom:clamp(36px,5vw,58px) }
+.crest{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:clamp(30px,5vw,48px) }
+.crest-txt{ display:flex; flex-direction:column; gap:1px }
+.crest-txt b{ font-weight:800; font-stretch:92%; letter-spacing:.11em; text-transform:uppercase; font-size:.8rem }
+.crest-txt span{ font-size:.7rem; letter-spacing:.13em; text-transform:uppercase;
+                 color:var(--type-low); font-weight:700; font-stretch:90% }
+.crest-sp{ flex:1 }
+.deck{ margin-top:24px; max-width:var(--measure); color:var(--type-mid); font-size:1.17rem; line-height:1.55 }
+.deck b{ color:var(--type); font-weight:700 }
+
+.facts{ margin-top:clamp(34px,5vw,52px); display:grid; gap:1px; background:var(--hairline);
+        border:1px solid var(--hairline); border-radius:var(--r-lg); overflow:hidden;
+        grid-template-columns:repeat(auto-fit,minmax(166px,1fr)) }
+.fact{ background:var(--ink-700); padding:19px 20px 21px }
+.fact .v{ font-weight:800; font-stretch:98%; font-size:clamp(1.8rem,3.5vw,2.3rem);
+          line-height:1.03; letter-spacing:-.024em; display:block }
+.fact .k{ margin-top:8px; display:block }
+.fact .s{ display:block; margin-top:5px; font-size:.83rem; color:var(--type-low); line-height:1.4 }
+.fact--lit{ box-shadow:inset 3px 0 0 var(--signal-fill) }
+.fact--lit .v{ color:var(--signal) }
+
+/* ---- provenance chips -------------------------------------------------- */
+.src{ display:inline-flex; align-items:center; gap:6px; vertical-align:middle;
+      font-weight:700; font-stretch:88%; text-transform:uppercase; letter-spacing:.11em;
+      font-size:.625rem; padding:3px 7px; border-radius:var(--r-sm);
+      border:1px solid var(--hairline); color:var(--type-low); background:var(--ink-800); white-space:nowrap }
+.src::before{ content:""; width:5px; height:5px; border-radius:50%; background:var(--type-low); flex:none }
+.src--iebc{ color:var(--verified); border-color:color-mix(in srgb,var(--verified) 34%,transparent) }
+.src--iebc::before{ background:var(--verified) }
+.src--scenario{ color:var(--signal); border-color:color-mix(in srgb,var(--signal) 36%,transparent) }
+.src--scenario::before{ background:var(--signal-fill) }
+
+/* ---- prose ------------------------------------------------------------- */
+.lede{ font-size:1.22rem; line-height:1.48; max-width:var(--measure) }
+.body{ color:var(--type-mid); max-width:var(--measure) }
+.body + .body{ margin-top:1.05em }
+.body b,.lede b{ color:var(--type); font-weight:700 }
+.pull{ margin:clamp(28px,4vw,42px) 0; padding-left:22px; border-left:2px solid var(--signal-fill);
+       font-size:clamp(1.32rem,2.7vw,1.78rem); line-height:1.22; font-weight:700;
+       letter-spacing:-.016em; text-wrap:balance; max-width:32ch }
+
+/* ---- panels ------------------------------------------------------------ */
+.panel{ margin-top:clamp(26px,3.6vw,38px); background:var(--ink-700); border:1px solid var(--hairline);
+        border-radius:var(--r-lg); box-shadow:var(--lift); overflow:hidden }
+.panel-head{ display:flex; flex-wrap:wrap; gap:14px 20px; align-items:flex-end; justify-content:space-between;
+             padding:20px clamp(16px,2.4vw,26px) 17px; border-bottom:1px solid var(--hairline);
+             background:var(--ink-800) }
+.panel-head h3{ margin-bottom:4px }
+.panel-head p{ font-size:.86rem; color:var(--type-low); max-width:56ch; line-height:1.45 }
+.panel-body{ padding:clamp(16px,2.4vw,26px) }
+
+/* ---- controls ---------------------------------------------------------- */
+.segbar{ display:flex; flex-wrap:wrap; gap:6px }
+.seg{ font:inherit; font-size:.8rem; font-weight:700; font-stretch:92%; padding:6px 12px;
+      border-radius:var(--r-sm); cursor:pointer; border:1px solid var(--hairline);
+      background:var(--ink-700); color:var(--type-mid);
+      transition:transform 160ms var(--ease-out), background-color 160ms ease, color 160ms ease, border-color 160ms ease }
+.seg:active{ transform:scale(.97) }
+.seg[aria-pressed="true"]{ background:var(--signal); border-color:var(--signal); color:var(--screen) }
+@media (hover:hover) and (pointer:fine){
+  .seg:hover{ border-color:var(--field-line); color:var(--type) }
+  .seg[aria-pressed="true"]:hover{ background:var(--signal-bright); border-color:var(--signal-bright); color:var(--screen) }
+}
+.btn{ font:inherit; font-size:.85rem; font-weight:700; font-stretch:94%; padding:9px 17px;
+      border-radius:var(--r-sm); cursor:pointer; border:1px solid var(--signal);
+      background:var(--signal); color:var(--screen);
+      transition:transform 160ms var(--ease-out), background-color 160ms ease, border-color 160ms ease }
+.btn:active{ transform:scale(.97) }
+.btn[disabled]{ opacity:.42; cursor:not-allowed }
+@media (hover:hover) and (pointer:fine){
+  .btn:not([disabled]):hover{ background:var(--signal-bright); border-color:var(--signal-bright) }
+}
+.btn--ghost{ background:transparent; color:var(--type-mid); border-color:var(--hairline) }
+@media (hover:hover) and (pointer:fine){
+  .btn--ghost:hover{ background:var(--ink-600); color:var(--type); border-color:var(--field-line) }
+}
+
+/* ---- the cartogram ----------------------------------------------------- */
+.mapwrap{ display:grid; gap:clamp(12px,1.8vw,20px); align-items:start;
+  grid-template-columns:1fr 1fr;
+  grid-template-areas:"north north" "west central" "loima central" "south east" }
+.blk{ border:1px solid var(--hairline); border-radius:var(--r-md); padding:11px 12px 13px; background:var(--ink-800) }
+.blk--north{grid-area:north}  .blk--west{grid-area:west}  .blk--central{grid-area:central}
+.blk--loima{grid-area:loima}  .blk--south{grid-area:south} .blk--east{grid-area:east}
+.blk-hd{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:9px }
+.blk-hd .nm{ font-weight:700; font-stretch:88%; text-transform:uppercase; letter-spacing:.12em;
+             font-size:.65rem; color:var(--type-mid) }
+.blk-hd .sm{ font-size:.65rem; font-weight:700; font-stretch:90%; color:var(--type-low); white-space:nowrap }
+/* A fixed track range, not 1fr: a tile is the same object in every block,
+   so six wards in the north cannot render three times the width of four in
+   Loima. Trailing space in a block is correct — it is a cartogram, not a bar. */
+.tiles{ display:grid; gap:5px; grid-template-columns:repeat(auto-fill,minmax(88px,112px)) }
+
+.tile{
+  font:inherit; text-align:left; cursor:pointer; position:relative;
+  border:1px solid transparent; border-radius:var(--r-sm);
+  padding:8px 8px 7px; min-height:60px; display:flex; flex-direction:column; justify-content:space-between;
+  transition:transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out), filter 150ms ease;
+}
+.tile .tv{ font-weight:800; font-stretch:96%; font-size:.98rem; letter-spacing:-.02em; line-height:1 }
+/* Condensed hard on the width axis — this is what a variable width axis is
+   for: "Lokiriama/Lorengippi" has to fit in the same tile as "Loima". */
+.tile .tn{ font-size:.6rem; font-weight:700; font-stretch:70%; text-transform:uppercase;
+           letter-spacing:.03em; line-height:1.2; margin-top:6px;
+           overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:.88 }
+.tile:active{ transform:scale(.97) }
+@media (hover:hover) and (pointer:fine){
+  .tile:hover{ transform:translateY(-1px); box-shadow:var(--lift-hi); filter:saturate(1.12) }
+}
+.tile[aria-pressed="true"]{ box-shadow:0 0 0 2px var(--screen), 0 0 0 4px var(--signal) }
+.tile.is-dim{ opacity:.3 }
+
+.maplegend{ display:flex; flex-wrap:wrap; gap:7px 18px; align-items:center; margin-top:16px;
+            padding-top:14px; border-top:1px solid var(--hairline) }
+.maplegend .li{ display:inline-flex; align-items:center; gap:7px; font-size:.74rem;
+                color:var(--type-mid); font-weight:700; font-stretch:92% }
+.maplegend .sw{ width:14px; height:10px; border-radius:1px; flex:none }
+.mapnote{ margin-top:10px; font-size:.72rem; color:var(--type-low); line-height:1.45 }
+
+/* ---- ward drawer ------------------------------------------------------- */
+.drawer{ border:1px solid var(--hairline); border-radius:var(--r-md); background:var(--ink-700);
+         margin-top:18px; overflow:hidden; box-shadow:var(--lift) }
+.drawer[hidden]{ display:none }
+.dw-hd{ display:flex; flex-wrap:wrap; gap:12px 18px; align-items:flex-start; justify-content:space-between;
+        padding:16px 18px 14px; border-bottom:1px solid var(--hairline); background:var(--ink-800) }
+.dw-hd h3{ font-size:1.24rem; letter-spacing:-.016em }
+.dw-hd .sub{ font-size:.688rem; font-weight:700; font-stretch:88%; text-transform:uppercase;
+             letter-spacing:.11em; color:var(--type-low); margin-top:2px; display:block }
+.dw-body{ padding:16px 18px 20px; display:grid; gap:20px; grid-template-columns:1fr }
+@media (min-width:760px){ .dw-body{ grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) } }
+.dw-stats{ display:grid; gap:1px; background:var(--hairline); border:1px solid var(--hairline);
+           border-radius:var(--r-sm); overflow:hidden; grid-template-columns:repeat(2,1fr) }
+.dw-stat{ background:var(--ink-700); padding:11px 13px 13px }
+.dw-stat b{ display:block; font-weight:800; font-stretch:96%; font-size:1.28rem; letter-spacing:-.02em; line-height:1.06 }
+.dw-stat span{ display:block; margin-top:4px; font-size:.6rem; font-weight:700; font-stretch:86%;
+               text-transform:uppercase; letter-spacing:.1em; color:var(--type-low) }
+.dw-gap{ margin-top:14px; padding:12px 14px; border-radius:var(--r-sm);
+         background:var(--ink-600); border:1px solid var(--hairline); font-size:.86rem;
+         line-height:1.5; color:var(--type-mid) }
+.dw-gap b{ color:var(--signal); font-weight:800 }
+.stations{ min-width:0 }
+.stations .u-label{ display:block; margin-bottom:9px }
+.stationlist{ list-style:none; margin:0; padding:0; max-height:224px; overflow-y:auto;
+              border:1px solid var(--hairline); border-radius:var(--r-sm); background:var(--ink-800) }
+.stationlist li{ padding:7px 12px; font-size:.82rem; line-height:1.35; color:var(--type-mid);
+                 border-bottom:1px solid var(--hairline-soft); display:flex; gap:9px; align-items:baseline }
+.stationlist li:last-child{ border-bottom:0 }
+.stationlist .ix{ font-size:.62rem; font-weight:700; color:var(--type-low); flex:none; min-width:20px }
+.stationlist .mob{ margin-left:auto; font-size:.575rem; font-weight:700; font-stretch:86%;
+                   text-transform:uppercase; letter-spacing:.08em; color:var(--signal); flex:none }
+
+/* ---- the board --------------------------------------------------------- */
+.legend{ display:flex; flex-wrap:wrap; gap:7px 18px; align-items:center; margin-bottom:16px }
+.legend .li{ display:inline-flex; align-items:center; gap:7px; font-size:.74rem;
+             color:var(--type-mid); font-weight:700; font-stretch:92% }
+.legend .sw{ width:14px; height:10px; border-radius:1px; flex:none }
+
+.board{ display:flex; flex-direction:column }
+.wardrow{ display:grid; grid-template-columns:minmax(112px,1.35fr) minmax(90px,3.1fr) 62px 84px;
+          gap:12px; align-items:center; padding:7px 8px; border-radius:var(--r-sm);
+          border-bottom:1px solid var(--hairline-soft); cursor:pointer; text-align:left;
+          font:inherit; background:none; color:inherit; width:100%; border-left:0; border-right:0; border-top:0;
+          transition:background-color 150ms ease }
+.wardrow:last-child{ border-bottom:0 }
+@media (hover:hover) and (pointer:fine){ .wardrow:hover{ background:var(--ink-600) } }
+.wardrow[aria-pressed="true"]{ background:var(--ink-600); box-shadow:inset 2px 0 0 var(--signal) }
+.wardrow.is-flip .wname b::after{ content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
+                                  background:var(--signal-fill); margin-left:7px; vertical-align:middle }
+.wname{ min-width:0 }
+.wname b{ display:block; font-weight:700; font-size:.9rem; line-height:1.25; letter-spacing:-.005em;
+          overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.wname span{ display:block; font-size:.688rem; color:var(--type-low); font-weight:700; font-stretch:88%;
+             text-transform:uppercase; letter-spacing:.09em; margin-top:1px;
+             overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.meter{ height:11px; background:var(--sat-track); border-radius:1px; position:relative; overflow:hidden }
+.meter i{ display:block; height:100%; border-radius:0 3px 3px 0; width:0;
+          transition:width 340ms var(--ease-out), background-color 220ms ease }
+.meter .tick{ position:absolute; top:0; bottom:0; width:1px; background:var(--hairline) }
+.wpct{ text-align:right; font-weight:800; font-stretch:96%; font-size:.9rem; letter-spacing:-.012em }
+.wstat{ font-size:.66rem; font-weight:700; font-stretch:88%; text-transform:uppercase;
+        letter-spacing:.1em; text-align:right; white-space:nowrap; color:var(--type-low) }
+.wstat[data-s="working"]{ color:var(--signal) }
+.wstat[data-s="holding"]{ color:var(--verified) }
+
+.boardfoot{ margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline);
+            display:flex; flex-wrap:wrap; gap:10px 26px; align-items:baseline;
+            font-size:.83rem; color:var(--type-mid) }
+.boardfoot b{ color:var(--type); font-weight:800 }
+
+/* ---- dials ------------------------------------------------------------- */
+.dials{ display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)) }
+.dial{ background:var(--ink-800); border:1px solid var(--hairline); border-radius:var(--r-md); padding:16px 18px 18px }
+.dial-top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:3px }
+.dial-top b{ font-weight:700; font-size:.95rem }
+.dial-top .out{ font-weight:800; font-stretch:96%; font-size:1.14rem; color:var(--signal); letter-spacing:-.018em }
+.dial p{ font-size:.79rem; color:var(--type-low); line-height:1.45; margin-bottom:13px }
+input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:22px;
+                   background:transparent; cursor:pointer; display:block; margin:0 }
+input[type=range]::-webkit-slider-runnable-track{ height:5px; border-radius:2px; background:var(--sat-track); border:1px solid var(--hairline) }
+input[type=range]::-moz-range-track{ height:5px; border-radius:2px; background:var(--sat-track); border:1px solid var(--hairline) }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:19px; height:19px;
+  margin-top:-8px; border-radius:50%; background:var(--signal-fill); border:2px solid var(--ink-700);
+  box-shadow:0 1px 3px rgba(0,0,0,.28) }
+input[type=range]::-moz-range-thumb{ width:19px; height:19px; border-radius:50%; background:var(--signal-fill);
+  border:2px solid var(--ink-700); box-shadow:0 1px 3px rgba(0,0,0,.28) }
+.scale{ display:flex; justify-content:space-between; font-size:.66rem; color:var(--type-low);
+        font-weight:700; font-stretch:88%; letter-spacing:.07em; margin-top:2px }
+
+.funnel{ margin-top:22px; display:grid; gap:1px; background:var(--hairline);
+         border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden;
+         grid-template-columns:repeat(auto-fit,minmax(132px,1fr)) }
+.fstep{ background:var(--ink-700); padding:13px 14px 15px }
+.fstep .fv{ font-weight:800; font-stretch:96%; font-size:1.34rem; letter-spacing:-.022em; display:block; line-height:1.08 }
+.fstep .fk{ display:block; margin-top:5px }
+.fstep .fr{ display:block; margin-top:4px; font-size:.71rem; color:var(--type-low) }
+.fstep--end{ background:var(--ink-800); box-shadow:inset 0 2px 0 var(--signal-fill) }
+.fstep--end .fv{ color:var(--signal) }
+
+/* ---- trajectory -------------------------------------------------------- */
+.traj{ margin-top:22px; border:1px solid var(--hairline); border-radius:var(--r-md);
+       background:var(--ink-800); padding:16px 18px 12px }
+.traj-hd{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:12px }
+.traj-hd .u-label{ display:block }
+.traj-hd .val{ font-weight:800; font-stretch:96%; font-size:1.16rem; color:var(--signal); letter-spacing:-.018em }
+.traj svg{ display:block; width:100%; height:auto; overflow:visible }
+
+/* ---- live registration ------------------------------------------------- */
+.reg{ display:grid; gap:0; grid-template-columns:1fr; }
+@media (min-width:820px){ .reg{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1px; background:var(--hairline) } }
+.reg-side{ background:var(--ink-700); padding:clamp(16px,2.2vw,24px) }
+.reg-side--out{ background:var(--ink-800) }
+.steps{ display:flex; gap:6px; margin-bottom:18px }
+.stepdot{ flex:1; height:3px; border-radius:2px; background:var(--sat-track); position:relative; overflow:hidden }
+.stepdot i{ position:absolute; inset:0; width:0; background:var(--signal-fill);
+            transition:width 260ms var(--ease-out) }
+.stepdot.is-on i{ width:100% }
+.fieldrow{ margin-bottom:14px }
+.fieldrow label{ display:block; margin-bottom:5px }
+.inp{ font:inherit; font-size:.92rem; width:100%; padding:9px 11px; border-radius:var(--r-sm);
+      border:1px solid var(--field-line); background:var(--ink-600); color:var(--type);
+      transition:border-color 150ms ease }
+.inp:focus{ border-color:var(--signal); outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--signal) 18%,transparent) }
+select.inp{ cursor:pointer }
+.inp[disabled]{ opacity:.5; cursor:not-allowed }
+.hint{ font-size:.73rem; color:var(--type-low); margin-top:5px; line-height:1.4 }
+.regactions{ display:flex; flex-wrap:wrap; gap:9px; margin-top:16px; align-items:center }
+
+.sms{ border:1px solid var(--hairline); border-radius:var(--r-md); background:var(--ink-700);
+      padding:14px 16px; margin-bottom:16px }
+.sms .from{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:7px }
+.sms .from b{ font-size:.7rem; font-weight:700; font-stretch:88%; text-transform:uppercase; letter-spacing:.1em; color:var(--signal) }
+.sms .from span{ font-size:.65rem; color:var(--type-low); font-weight:700 }
+.sms .msg{ font-size:.88rem; line-height:1.5; color:var(--type-mid) }
+.sms .code{ font-weight:800; font-stretch:100%; font-size:1.42rem; letter-spacing:.16em;
+            color:var(--type); display:block; margin-top:8px }
+.sms[hidden]{ display:none }
+
+.receipt{ border:1px solid color-mix(in srgb,var(--verified) 38%,transparent); border-radius:var(--r-md);
+          background:color-mix(in srgb,var(--verified) 7%,var(--ink-700)); padding:16px 18px 18px }
+.receipt[hidden]{ display:none }
+.receipt .tick{ display:inline-flex; align-items:center; gap:8px; margin-bottom:10px;
+                font-weight:800; font-stretch:92%; font-size:.72rem; text-transform:uppercase;
+                letter-spacing:.12em; color:var(--verified) }
+.receipt .tick i{ width:15px; height:15px; border-radius:50%; background:var(--verified); flex:none; position:relative }
+.receipt .tick i::after{ content:""; position:absolute; left:4px; top:4px; width:6px; height:3px;
+  border-left:1.6px solid var(--ink-700); border-bottom:1.6px solid var(--ink-700); transform:rotate(-45deg) }
+.rrow{ display:grid; grid-template-columns:118px 1fr; gap:3px 14px; padding:5px 0;
+       border-bottom:1px solid var(--hairline-soft); font-size:.86rem; align-items:baseline }
+.rrow:last-of-type{ border-bottom:0 }
+.rrow dt{ font-size:.63rem; font-weight:700; font-stretch:86%; text-transform:uppercase;
+          letter-spacing:.1em; color:var(--type-low) }
+.rrow dd{ margin:0; font-weight:700 }
+.refcode{ margin-top:13px; padding:11px 13px; border-radius:var(--r-sm); background:var(--ink-800);
+          border:1px dashed color-mix(in srgb,var(--signal) 44%,transparent) }
+.refcode b{ display:block; font-weight:800; font-size:1.1rem; letter-spacing:.1em; color:var(--signal); margin-top:3px }
+.regempty{ color:var(--type-low); font-size:.88rem; line-height:1.55 }
+
+/* ---- versus ------------------------------------------------------------ */
+.versus{ display:grid; gap:1px; background:var(--hairline); border:1px solid var(--hairline);
+         border-radius:var(--r-lg); overflow:hidden; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)) }
+.vcol{ background:var(--ink-700); padding:22px clamp(16px,2.2vw,24px) 24px }
+.vcol--ours{ background:var(--ink-800); box-shadow:inset 0 3px 0 var(--signal-fill) }
+.vcol h3{ margin-bottom:3px }
+.vcol > .u-label{ display:block; margin-bottom:14px }
+.vlist{ list-style:none; margin:16px 0 0; padding:0; display:flex; flex-direction:column; gap:11px }
+.vlist li{ display:grid; grid-template-columns:15px 1fr; gap:11px; font-size:.9rem; line-height:1.45; color:var(--type-mid) }
+.vlist li b{ color:var(--type); font-weight:700 }
+.vlist .g{ width:9px; height:9px; border-radius:50%; margin-top:7px; flex:none }
+.vcol--theirs .g{ background:var(--sat-track); border:1px solid var(--field-line) }
+.vcol--ours .g{ background:var(--signal-fill) }
+
+/* ---- plan -------------------------------------------------------------- */
+.plan{ list-style:none; margin:0; padding:0; counter-reset:p; display:flex; flex-direction:column }
+.plan li{ counter-increment:p; display:grid; grid-template-columns:34px 1fr auto; gap:6px 16px;
+          padding:16px 4px; border-bottom:1px solid var(--hairline); align-items:baseline }
+.plan li:last-child{ border-bottom:0 }
+.plan li::before{ content:counter(p,decimal-leading-zero); color:var(--signal);
+                  font-weight:800; font-stretch:88%; font-size:.72rem; letter-spacing:.09em }
+.plan b{ grid-column:2; grid-row:1; font-weight:700; font-size:.98rem }
+.plan .when{ grid-column:3; grid-row:1; font-size:.66rem; font-weight:700; font-stretch:88%;
+             text-transform:uppercase; letter-spacing:.1em; color:var(--type-low); white-space:nowrap }
+.plan span:not(.when){ display:block; grid-column:2; grid-row:2; color:var(--type-mid);
+             font-size:.88rem; line-height:1.45; margin-top:3px; max-width:58ch }
+
+/* ---- notes ------------------------------------------------------------- */
+.note{ margin-top:clamp(26px,3.6vw,34px); padding:18px 20px; background:var(--ink-800);
+       border:1px solid var(--hairline); border-left:2px solid var(--signal-fill);
+       border-radius:var(--r-md); font-size:.88rem; line-height:1.52; color:var(--type-mid); max-width:var(--measure) }
+.note b{ color:var(--type); font-weight:700 }
+.note .u-label{ display:block; margin-bottom:7px }
+
+footer{ padding:34px 0 60px; color:var(--type-low); font-size:.8rem; line-height:1.55 }
+footer p{ max-width:var(--measure) }
+footer p + p{ margin-top:9px }
+
+@media (max-width:640px){
+  .mapwrap{ grid-template-columns:1fr;
+            grid-template-areas:"north" "west" "central" "loima" "south" "east" }
+  .wardrow{ grid-template-columns:minmax(96px,1.5fr) 1fr 52px; row-gap:2px }
+  .wstat{ grid-column:2 / 4; text-align:right; margin-top:-2px }
+  .plan li{ grid-template-columns:30px 1fr }
+  .plan .when{ grid-column:2; grid-row:3; margin-top:6px }
+  .rrow{ grid-template-columns:1fr }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important }
+}
+</style>
+
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="tb-id"><span class="mark" aria-hidden="true"></span><b>Ekusi Lore &middot; Akiyar</b></span>
+    <span class="tb-sp"></span>
+    <span class="tb-stat tb-stat--lit"><b id="tb-ver">4,981</b><span>Verified</span></span>
+    <span class="tb-div" aria-hidden="true"></span>
+    <span class="tb-stat"><b id="tb-sat">2.09%</b><span>County</span></span>
+    <span class="tb-div tb-hide" aria-hidden="true"></span>
+    <span class="tb-stat tb-hide"><b id="tb-cold">20</b><span>Cold wards</span></span>
+    <span class="tb-div tb-hide" aria-hidden="true"></span>
+    <span class="tb-stat tb-hide"><b>238,528</b><span>The prize</span></span>
+  </div>
+</div>
+
+<div class="shell masthead">
+  <div class="crest">
+    <span class="mark mark--lg" aria-hidden="true"></span>
+    <span class="crest-txt">
+      <b>Ekusi Lore</b>
+      <span>Turkana County &middot; Senate 2027</span>
+    </span>
+    <span class="crest-sp"></span>
+    <span class="u-label">Akiyar &middot; Command brief</span>
+  </div>
+
+  <h1>We do not<br>estimate support.<br>We prove it.</h1>
+
+  <p class="deck">
+    Turkana has <b>238,528 registered voters</b> across 30 wards and 559 polling stations.
+    Every rival in this race will spend two years guessing how many of them are theirs.
+    <b>Akiyar is how we stop guessing</b> &mdash; every supporter is a real name, at a named
+    polling station, confirmed by their own phone answering back.
+  </p>
+
+  <div class="facts">
+    <div class="fact"><span class="v">238,528</span><span class="k u-label">Registered voters</span><span class="s">The whole prize. IEBC register.</span></div>
+    <div class="fact"><span class="v">30</span><span class="k u-label">Wards</span><span class="s">Each with its own real denominator.</span></div>
+    <div class="fact"><span class="v">559</span><span class="k u-label">Polling stations</span><span class="s">Where the vote is actually counted.</span></div>
+    <div class="fact fact--lit"><span class="v" id="hero-verified">4,981</span><span class="k u-label">Verified supporters</span><span class="s">Scenario &mdash; move the dials below.</span></div>
+  </div>
+</div>
+
+<hr class="rule-lit">
+
+<!-- ============================ 01 thesis ============================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">01</span><span class="u-label">The thesis</span></div>
+  <p class="lede">A rally is a photograph. A register is a map.</p>
+  <p class="pull">A crowd cannot vote. A person at a polling station can.</p>
+  <p class="body">
+    Ten thousand people at a rally in Lodwar is a good afternoon and a good photograph. It
+    tells you nothing you can act on: not who they are, not which ward they will queue in,
+    not whether they were bussed from three constituencies away. On the morning of the vote
+    that photograph does no work at all.
+  </p>
+  <p class="body">
+    A verified register does. It says <b>Kakuma has 12,153 registered voters and we can name
+    378 of them</b> &mdash; so Kakuma is 3.1&nbsp;per&nbsp;cent ours, which is thin, and here
+    is the list of people there who already said they would help. That is not a slogan. That
+    is Tuesday's route for the caravan.
+  </p>
+  <div class="note">
+    <span class="u-label">The rule this whole system is built on</span>
+    Nothing is counted until the phone answers back. A signature on a paper list, a shout at
+    a baraza, a follow on Facebook &mdash; none of it enters a published number.
+    <b>Only an SMS-verified supporter is a supporter.</b> That discipline is what makes every
+    figure on this page one we could defend in front of a journalist, a rival, or the party.
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 02 the county ========================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">02</span><span class="u-label">The county</span></div>
+  <h2>Thirty wards. One screen.</h2>
+  <p class="body" style="margin-top:16px">
+    One tile per ward, grouped by constituency and placed in roughly their real positions on
+    the ground &mdash; north at the top, the lake and Lodwar in the centre, the south below.
+    <b>Every tile is the same size on purpose.</b> Turkana's northern wards are enormous and
+    almost empty; drawn to scale they would dominate a map while holding a fraction of the
+    vote. Here each ward gets equal weight, because at the ballot box it has it.
+  </p>
+  <p class="body" style="margin-top:14px"><b>Tap any ward</b> to open it.</p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Ward saturation, by constituency</h3>
+        <p>Verified supporters as a share of that ward's registered voters.
+           <span class="src src--iebc">IEBC denominators</span>
+           <span class="src src--scenario">Scenario counts</span></p>
+      </div>
+      <button class="seg" id="clear-ward" type="button">Clear selection</button>
+    </div>
+    <div class="panel-body">
+      <div class="mapwrap" id="mapwrap"></div>
+      <div class="maplegend">
+        <span class="li"><span class="sw" style="background:var(--sat-cold)"></span>Cold &mdash; under 3%</span>
+        <span class="li"><span class="sw" style="background:var(--sat-working)"></span>Working &mdash; 3&ndash;8%</span>
+        <span class="li"><span class="sw" style="background:var(--sat-holding)"></span>Holding &mdash; over 8%</span>
+      </div>
+      <p class="mapnote">
+        Schematic. Tiles show relative position between constituencies, not surveyed boundaries
+        or land area. The Akiyar board splits Holding again at 15% into <em>Strong</em>; at
+        realistic reach no ward gets there inside ninety days, so that band is not drawn here.
+      </p>
+
+      <div class="drawer" id="drawer" hidden>
+        <div class="dw-hd">
+          <div>
+            <h3 id="dw-name">&mdash;</h3>
+            <span class="sub" id="dw-con">&mdash;</span>
+          </div>
+          <span class="src src--scenario" id="dw-band">&mdash;</span>
+        </div>
+        <div class="dw-body">
+          <div>
+            <div class="dw-stats">
+              <div class="dw-stat"><b id="dw-rv">&mdash;</b><span>Registered voters</span></div>
+              <div class="dw-stat"><b id="dw-v">&mdash;</b><span>Verified supporters</span></div>
+              <div class="dw-stat"><b id="dw-pct">&mdash;</b><span>Ward saturation</span></div>
+              <div class="dw-stat"><b id="dw-st">&mdash;</b><span>Polling stations</span></div>
+            </div>
+            <p class="dw-gap" id="dw-gap">&mdash;</p>
+          </div>
+          <div class="stations">
+            <span class="u-label" id="dw-stlabel">Polling stations</span>
+            <ul class="stationlist" id="dw-stations"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 03 the board =========================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">03</span><span class="u-label">The instrument</span></div>
+  <h2>The board.</h2>
+  <p class="body" style="margin-top:16px">
+    The same thirty wards, ranked. This is the single screen the campaign runs on: not who
+    likes us, but <b>what share of each ward we can prove</b> &mdash; and therefore where the
+    next fourteen days go.
+  </p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Ranked by saturation</h3>
+        <p>Bar length is the share; colour is the band. Every row carries its own number, so nothing depends on colour alone.</p>
+      </div>
+      <div class="segbar" id="con-filter" role="group" aria-label="Filter by constituency"></div>
+    </div>
+    <div class="panel-body">
+      <div class="legend">
+        <span class="li"><span class="sw" style="background:var(--sat-cold)"></span>Cold</span>
+        <span class="li"><span class="sw" style="background:var(--sat-working)"></span>Working</span>
+        <span class="li"><span class="sw" style="background:var(--sat-holding)"></span>Holding</span>
+        <span class="li"><span class="sw" style="background:var(--signal-fill);width:6px;height:6px;border-radius:50%"></span>Changed band since you moved the dials</span>
+        <span class="li" style="color:var(--type-low)">Ticks at 3% and 8%</span>
+      </div>
+      <div class="board" id="board"></div>
+      <div class="boardfoot">
+        <span><b id="bf-wards">30</b> wards shown</span>
+        <span><b id="bf-cold">20</b> still cold</span>
+        <span><b id="bf-verified">4,981</b> verified</span>
+        <span><b id="bf-pct">2.09%</b> saturation</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="u-label">How to read a cold ward</span>
+    Cold does not mean hostile. It means <b>unmeasured</b>. Turkwel has 19,528 registered
+    voters &mdash; the largest ward in the county &mdash; and almost nobody there has been
+    asked. That is not a loss. That is the biggest unopened box on the board.
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 04 the dials =========================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">04</span><span class="u-label">The engine</span></div>
+  <h2>Two levers, and only two.</h2>
+  <p class="body" style="margin-top:16px">
+    Digital is how we reach people cheaply and fast. It is <b>not</b> how we reach all of
+    Turkana &mdash; and any brief that pretends otherwise will be corrected by the first
+    person in the room who has driven to Kibish. Move both dials and watch the map and the
+    board change. The point is what happens when you move only one.
+  </p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Reach model</h3>
+        <p>Monthly figures. Conversion rates are planning assumptions, stated so they can be argued with &mdash; not results.</p>
+      </div>
+      <button class="seg" id="reset" type="button">Reset to today</button>
+    </div>
+    <div class="panel-body">
+      <div class="dials">
+        <div class="dial">
+          <div class="dial-top"><b><label for="d-digital">Digital reach</label></b><span class="out" id="o-digital">0</span></div>
+          <p>Unique people per month who see the campaign on Facebook, TikTok, WhatsApp or the website. Skews to Lodwar, Kanamkemer and Kakuma &mdash; where the signal and the handsets are.</p>
+          <input type="range" id="d-digital" min="0" max="120000" step="2500" value="0" aria-describedby="o-digital">
+          <div class="scale"><span>0</span><span>60,000</span><span>120,000</span></div>
+        </div>
+        <div class="dial">
+          <div class="dial-top"><b><label for="d-ground">Ground &amp; SMS reach</label></b><span class="out" id="o-ground">0</span></div>
+          <p>People reached per month by barazas, ward agents, radio call-ins and USSD sign-up on a feature phone. This is how the north and the interior get counted at all.</p>
+          <input type="range" id="d-ground" min="0" max="120000" step="2500" value="0" aria-describedby="o-ground">
+          <div class="scale"><span>0</span><span>60,000</span><span>120,000</span></div>
+        </div>
+      </div>
+
+      <div class="funnel">
+        <div class="fstep"><span class="fv" id="f-reach">0</span><span class="fk u-label">Reached</span><span class="fr">People who see us in a month</span></div>
+        <div class="fstep"><span class="fv" id="f-open">0</span><span class="fk u-label">Open the form</span><span class="fr">4.0% of digital &middot; 22% of ground</span></div>
+        <div class="fstep"><span class="fv" id="f-start">0</span><span class="fk u-label">Start it</span><span class="fr">62% of those who open</span></div>
+        <div class="fstep fstep--end"><span class="fv" id="f-verified">0</span><span class="fk u-label">Verified by SMS</span><span class="fr">71% finish and confirm</span></div>
+      </div>
+
+      <div class="traj">
+        <div class="traj-hd">
+          <span class="u-label">Ninety-day trajectory &mdash; verified supporters on the register</span>
+          <span class="val" id="traj-end">4,981</span>
+        </div>
+        <svg id="traj-svg" viewBox="0 0 760 190" role="img" aria-labelledby="traj-t">
+          <title id="traj-t">Projected verified supporters over ninety days at the current reach settings</title>
+        </svg>
+      </div>
+
+      <div class="note" style="max-width:none">
+        <span class="u-label">Read this before you trust the numbers</span>
+        <span id="verdict"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 05 the moment ========================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">05</span><span class="u-label">The ninety seconds that matter</span></div>
+  <h2>Sign somebody up.</h2>
+  <p class="body" style="margin-top:16px">
+    This is the actual flow, running on the real Turkana register &mdash; the same 30 wards
+    and 559 polling stations. Pick a ward and the real stations for it appear.
+    <b>Nothing counts until the code comes back.</b> Complete it and watch the county figure
+    at the top of this page move by one.
+  </p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Live registration</h3>
+        <p>A working walkthrough. No SMS is sent and no data leaves this page &mdash; the code is shown on screen, exactly as it is in development.</p>
+      </div>
+      <button class="seg" id="reg-restart" type="button">Start again</button>
+    </div>
+    <div class="reg">
+      <div class="reg-side">
+        <div class="steps" aria-hidden="true">
+          <span class="stepdot is-on" id="sd1"><i></i></span>
+          <span class="stepdot" id="sd2"><i></i></span>
+          <span class="stepdot" id="sd3"><i></i></span>
+        </div>
+
+        <div id="stage-details">
+          <div class="fieldrow">
+            <label class="u-label" for="r-name">Full name</label>
+            <input class="inp" id="r-name" type="text" value="Akai Lokwawi" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="fieldrow">
+            <label class="u-label" for="r-ward">Ward</label>
+            <select class="inp" id="r-ward"></select>
+          </div>
+          <div class="fieldrow">
+            <label class="u-label" for="r-station">Polling station</label>
+            <select class="inp" id="r-station"></select>
+            <p class="hint" id="r-sthint">&mdash;</p>
+          </div>
+          <div class="fieldrow">
+            <label class="u-label" for="r-phone">Phone number</label>
+            <input class="inp" id="r-phone" type="tel" value="0712 345 678" inputmode="tel" autocomplete="off">
+            <p class="hint" id="r-phint">Stored as +254712345678. One person, one number &mdash; enforced by the database.</p>
+          </div>
+          <div class="regactions">
+            <button class="btn" id="r-send" type="button">Send my code</button>
+          </div>
+        </div>
+
+        <div id="stage-verify" hidden>
+          <div class="fieldrow">
+            <label class="u-label" for="r-code">Enter the six digits we sent</label>
+            <input class="inp" id="r-code" type="text" inputmode="numeric" maxlength="6"
+                   placeholder="000000" autocomplete="one-time-code"
+                   style="font-size:1.3rem;letter-spacing:.3em;font-weight:800">
+            <p class="hint" id="r-cerr">&nbsp;</p>
+          </div>
+          <div class="regactions">
+            <button class="btn" id="r-verify" type="button">Verify</button>
+            <button class="btn btn--ghost" id="r-resend" type="button">Resend</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="reg-side reg-side--out">
+        <div class="sms" id="sms" hidden>
+          <div class="from"><b>Ekusi Lore</b><span id="sms-time">now</span></div>
+          <p class="msg">Your Ekusi Lore verification code is<span class="code" id="sms-code">000000</span></p>
+        </div>
+
+        <div class="receipt" id="receipt" hidden>
+          <span class="tick"><i aria-hidden="true"></i>Verified supporter</span>
+          <dl style="margin:0">
+            <div class="rrow"><dt>Name</dt><dd id="rc-name">&mdash;</dd></div>
+            <div class="rrow"><dt>Phone</dt><dd id="rc-phone">&mdash;</dd></div>
+            <div class="rrow"><dt>Ward</dt><dd id="rc-ward">&mdash;</dd></div>
+            <div class="rrow"><dt>Station</dt><dd id="rc-station">&mdash;</dd></div>
+            <div class="rrow"><dt>Verified at</dt><dd id="rc-when">&mdash;</dd></div>
+          </dl>
+          <div class="refcode">
+            <span class="u-label">Their referral code</span>
+            <b id="rc-ref">LORE-000000</b>
+          </div>
+          <p class="hint" style="margin-top:12px" id="rc-effect">&mdash;</p>
+        </div>
+
+        <p class="regempty" id="reg-empty">
+          The record builds here as you go. Notice what never appears in it: <b>no national ID
+          number</b>, and <b>no date of birth</b> &mdash; only the year, and only if offered.
+          Under the Data Protection Act 2019 political opinion is sensitive personal data, and
+          the safest way to hold something is not to collect it.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 06 the record ========================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">06</span><span class="u-label">What one supporter is</span></div>
+  <h2>The record we hold &mdash;<br>and the record we refuse to hold.</h2>
+  <p class="body" style="margin-top:16px">
+    Every field earns its place by answering a question the campaign actually has. What is
+    missing is missing on purpose.
+  </p>
+
+  <div class="versus" style="margin-top:28px">
+    <div class="vcol vcol--ours">
+      <span class="u-label">Held, and used every day</span>
+      <h3>Seven fields</h3>
+      <ul class="vlist">
+        <li><span class="g"></span><span><b>Full name</b> &mdash; so a coordinator greets a real person, and near-duplicates inside a ward surface for review.</span></li>
+        <li><span class="g"></span><span><b>Verified phone</b> &mdash; the proof. One person, one number. Masked in every export unless an admin pulls it.</span></li>
+        <li><span class="g"></span><span><b>Ward</b> &mdash; the denominator. This is what turns a headcount into a percentage.</span></li>
+        <li><span class="g"></span><span><b>Polling station</b> &mdash; where their vote is counted. A trigger rejects any station outside the ward they chose.</span></li>
+        <li><span class="g"></span><span><b>Chief's area</b> &mdash; wards elect; sub-locations are how you convene a baraza. Kenya runs both, so we keep both.</span></li>
+        <li><span class="g"></span><span><b>Top issue</b> &mdash; optional. The manifesto writes itself from evidence instead of instinct.</span></li>
+        <li><span class="g"></span><span><b>Pledge</b> &mdash; optional. Everyone offering more than a vote becomes the ground-team list, by ward.</span></li>
+      </ul>
+    </div>
+    <div class="vcol vcol--theirs">
+      <span class="u-label">Refused, by design</span>
+      <h3>Three refusals</h3>
+      <ul class="vlist">
+        <li><span class="g"></span><span><b>Full national ID number</b> &mdash; never stored. Last four digits only, and even that optional. We do not need it to know how many voters are ours.</span></li>
+        <li><span class="g"></span><span><b>Full date of birth</b> &mdash; year only. Enough to segment youth turnout; not enough to impersonate anybody.</span></li>
+        <li><span class="g"></span><span><b>Raw IP and device data</b> &mdash; hashed on the way in, never kept in the clear.</span></li>
+      </ul>
+      <p class="body" style="margin-top:18px;font-size:.9rem">
+        Any opponent can promise to protect your data. We can show we
+        <b>structurally cannot leak what we never collected</b>. When this campaign is accused
+        of harvesting Turkana's identity numbers &mdash; and it will be &mdash; the answer is
+        a schema, not a denial.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 07 versus ============================== -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">07</span><span class="u-label">The advantage</span></div>
+  <h2>What they will know.<br>What we will know.</h2>
+
+  <div class="versus" style="margin-top:28px">
+    <div class="vcol vcol--theirs">
+      <span class="u-label">A well-run conventional campaign</span>
+      <h3>Runs on impressions</h3>
+      <ul class="vlist">
+        <li><span class="g"></span><span>Crowd size at the last rally, <b>estimated by eye</b>.</span></li>
+        <li><span class="g"></span><span>Page likes &mdash; <b>including from outside the county</b>, and from people too young to vote.</span></li>
+        <li><span class="g"></span><span>What the mobilisers report, which is always <b>what the principal wants to hear</b>.</span></li>
+        <li><span class="g"></span><span>A paper list with no phone confirmation, <b>no ward, and no way to test it</b>.</span></li>
+        <li><span class="g"></span><span>On election eve: a number somebody made up, defended loudly.</span></li>
+      </ul>
+    </div>
+    <div class="vcol vcol--ours">
+      <span class="u-label">Akiyar</span>
+      <h3>Runs on the register</h3>
+      <ul class="vlist">
+        <li><span class="g"></span><span><b>Every supporter tied to one of 559 polling stations</b> &mdash; the same unit the results are declared in.</span></li>
+        <li><span class="g"></span><span>Saturation against the <b>real IEBC denominator</b>, so 604 in Kakuma reads differently from 604 in Kibish.</span></li>
+        <li><span class="g"></span><span>Duplicate and anomaly detection running continuously, so <b>inflated numbers surface before a journalist finds them</b>.</span></li>
+        <li><span class="g"></span><span>The top issue in every ward, in supporters' own words.</span></li>
+        <li><span class="g"></span><span>A ground-team list: <b>everyone who offered to do more than vote</b>, by ward, ready to call.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="body" style="margin-top:30px">
+    The advantage is not that we are online and they are not &mdash; they will be online too.
+    <b>The advantage is that our number survives being questioned and theirs does not.</b> In
+    the last three weeks of a campaign, when every claim is contested and money must be spent
+    in one place and not another, that is the only difference that pays.
+  </p>
+</section>
+
+<hr class="rule-lit">
+
+<!-- ============================ 08 the plan ============================ -->
+<section class="section shell">
+  <div class="eyebrow"><span class="n">08</span><span class="u-label">What we need to start</span></div>
+  <h2>The first ninety days.</h2>
+  <p class="body" style="margin-top:16px">
+    In order, because two of these have long lead times we do not control and everything else
+    waits on them.
+  </p>
+
+  <ol class="plan" style="margin-top:22px">
+    <li><b>Start the shortcode paperwork</b><span class="when">Week 1</span>
+      <span>Africa's Talking plus Communications Authority approval for a sender ID and USSD code. This is the longest pole in the tent and nothing about it speeds up later. Sandbox SMS works today, so testing is not blocked by it.</span></li>
+    <li><b>Register with the ODPC as a Data Controller</b><span class="when">Week 1&ndash;2</span>
+      <span>Non-registration is itself an offence under the Data Protection Act. Alongside it: the privacy notice, the impact assessment, and a retention schedule that ends after the election is declared.</span></li>
+    <li><b>Sign off the manifesto commitments</b><span class="when">Week 2</span>
+      <span>Every promise on the site has to sit inside Article 96 &mdash; what a senator can actually deliver. Anything outside it is a line a rival will read back to us.</span></li>
+    <li><b>Launch with three wards, not thirty</b><span class="when">Week 3&ndash;5</span>
+      <span>Lodwar Township, Kanamkemer and Kakuma. Highest handset density, so the digital funnel is testable fastest, and the real conversion rates replace the assumptions on this page.</span></li>
+    <li><b>Recruit and train ward agents</b><span class="when">Week 4&ndash;9</span>
+      <span>Drawn from the ground-team list the register produces &mdash; people who already volunteered, in the ward they live in. Each sees only their own ward's supporters.</span></li>
+    <li><b>Open the north</b><span class="when">Week 6&ndash;13</span>
+      <span>Kibish, Lapur, Nanaam, Loima. USSD and baraza registration, because the digital funnel does not reach here &mdash; six of Kibish's ten polling stations are mobile or a water point &mdash; and the board should show that honestly rather than hiding it.</span></li>
+  </ol>
+
+  <div class="note">
+    <span class="u-label">One number to hold us to</span>
+    By day 90 the board should show <b>no ward at zero</b>. Not every ward warm &mdash; that
+    takes two years. Every ward <b>measured</b>, so that from that point on, every shilling
+    this campaign spends is aimed at a number instead of a hunch.
+  </div>
+</section>
+
+<hr class="rule-lit">
+
+<footer class="shell">
+  <p>
+    <b style="color:var(--type)">Sources.</b> Ward, constituency and polling-station counts,
+    all registered-voter denominators and every polling-station name on this page are the real
+    IEBC register for Turkana County &mdash; 6 constituencies, 30 wards, 559 stations,
+    238,528 voters. Supporter counts are an
+    <b style="color:var(--type)">illustrative scenario</b> produced by the Akiyar demo engine
+    and are not real people. Conversion rates in the reach model are planning assumptions, not
+    measurements. No figure here has been rounded up, and no supporter number on any public
+    surface will ever be published unless it is SMS-verified.
+  </p>
+  <p>
+    Prepared for Hon. Ekusi Lore &middot; Turkana County Senate campaign &middot; Akiyar
+    command brief. Internal &mdash; not for circulation outside the campaign team.
+  </p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Real IEBC geography, and the demo engine's own seeded supporter counts.
+     u = digital-reach multiplier (handset and signal density)
+     g = ground/SMS multiplier (where barazas and agents do the most work) */
+  var RAW = [
+    ["Kaeris","Turkana North",6586,143,0.7,1.35],
+    ["Lake Zone","Turkana North",10896,208,0.9,1.20],
+    ["Lapur","Turkana North",7188,26,0.6,1.40],
+    ["Kaaleng/Kaikor","Turkana North",8148,108,0.7,1.35],
+    ["Kibish","Turkana North",3684,63,0.5,1.45],
+    ["Nakalale","Turkana North",6435,89,0.7,1.35],
+    ["Kakuma","Turkana West",12153,378,1.9,0.85],
+    ["Lopur","Turkana West",5697,270,0.9,1.20],
+    ["Letea","Turkana West",5348,177,0.9,1.20],
+    ["Songot","Turkana West",4733,41,0.6,1.40],
+    ["Kalobeyei","Turkana West",5099,50,1.7,0.90],
+    ["Lokichoggio","Turkana West",5490,43,1.5,0.95],
+    ["Nanaam","Turkana West",4153,15,0.6,1.40],
+    ["Kerio Delta","Turkana Central",10672,32,1.0,1.15],
+    ["Kang'atotha","Turkana Central",7625,296,1.1,1.10],
+    ["Kalokol","Turkana Central",9179,29,1.1,1.10],
+    ["Lodwar Township","Turkana Central",17273,614,2.6,0.70],
+    ["Kanamkemer","Turkana Central",11222,135,2.2,0.75],
+    ["Kotaruk/Lobei","Loima",8174,311,0.9,1.20],
+    ["Turkwel","Loima",19528,409,1.2,1.05],
+    ["Loima","Loima",3978,9,0.7,1.35],
+    ["Lokiriama/Lorengippi","Loima",4835,254,0.7,1.35],
+    ["Kaputir","Turkana South",4123,154,0.9,1.20],
+    ["Katilu","Turkana South",13254,503,1.2,1.05],
+    ["Lobokat","Turkana South",4259,22,0.7,1.35],
+    ["Kalapata","Turkana South",4329,16,0.7,1.35],
+    ["Lokichar","Turkana South",14467,139,1.3,1.00],
+    ["Kapedo/Napeitom","Turkana East",3721,21,0.6,1.40],
+    ["Katilia","Turkana East",6357,289,0.8,1.25],
+    ["Lokori/Kochodin","Turkana East",9922,137,0.9,1.20]
+  ];
+  var W = RAW.map(function(r){
+    return { name:r[0], con:r[1], rv:r[2], base:r[3], u:r[4], g:r[5] };
+  });
+
+  /* Every real polling station in Turkana, by ward. */
+  var STATIONS = {"Kaeris":["Kitoekakumon Nursery School","Kaeris Primary School","Nadunga Primary School","Kangakipur Primary School","Kanukurdio Primary School","Kaituko Nursery School","Milimatatu Primary School","Kalopeta Water Point","Ngauriendira Nursery School","Kangamojoj Primary School"],"Lake Zone":["Todonyang Primary School","Nachukui Primary School","Lowarengak Primary School","Narengewoi Primary School","Nariokotome Primary School","Kataboi Primary School","Nasechabuin Nursery School","Lomekwi Primary School","Katiko Primary School","Riokomor Primary School","Kokiselei Primary School","Namorotot Primary School","Epur Primary School","Atapar Mobile","Mlango Water Point","Nariokotome Water Point","Lokitoeangaberu Nursery School","Piringkan Nursery School","Kobosan Water Point","Kangaki Primary School","Kalosep Water Point","Lokalobochio Water Point","Kapedor Water Point","Natoo Water Point","Loalany Mobile"],"Lapur":["Lokitaung Primary School","Natukobenyo Primary School","Napetet Primary School","Kachoda Primary School","Natoo Primary School","Karebur Primary School","Kokuro Primary School","Sasame Primary School","Nabulukok Water Point","Napeikar Primary School","Liwan Water Point","Lomanakeju Water Point","Kangikaala Water Point","Nagis Water Point","Loporukou Water Point","Kangarukia Primary School","Ngiburin Water Point","Ebur Kacheriongor Water Point","Eruth Kaado Water Point","Maisa Water Point","Kareengatuny Water Point","Lotorongoruk Water Point","Lochwa-arengan Water Point","Manalongoria Water Point","Lochor Edome Water Point"],"Kaaleng/Kaikor":["Loruth Primary School","Karach Ii Mobile","Kotome Mobile","Kaikor Primary School","Loitanit Centre","Karubangorok Trading Center","Lokolio Water Point","Nakinomet Primary School","Kaaleng Primary School","Kariworeng Primary School","Lokidongo Nursery School","Lokimae Water Point","Kakelae Primary School","Kapelewoi Primary School","Kaalem Primary School","Kaikor Trading Centre","Kopatia Nursery School","Ekicheles Primary School","Lorumor Mobile"],"Kibish":["Karach I Mobile","Lobulono Water Point","Kibish Primary School","Kemothia Water Point","Natapar Water Point","Lokamarinyang Primary School","Koyasa Primary School","Kaitede Mobile","Natodomeri Mobile","Napak Primary School"],"Nakalale":["Kakuma Boys Secondary School","Makutano Primary School","Losanyanait Water Point","Lokore Primary School","Ataerika Water Point","Nameyana Trading Center","Naduat Primary School","Morulingarengan Trading Centre","Moruangibuin Water Point","Kobuin Water Point","Losajait Primary School","Kalopetase Primary School","Kaemongor Mobile","Nakilinga Water Point","Namor Akwaak Water Point","Kaenyangaluk Primary School","Pelekech Primary School"],"Kakuma":["Arid Zone Primary School","loreng'o Primary School","Morungole Primary School","Abur Primary School","Kakuma Mixed Primary School","Pokotom Primary School","Kakuma Friendship Hall","Kakuma Baraza Park","Lotak Primary School","Wapet Primary School","Lokiding Water Point","Loreng Primary School","Kakuma Peace Centre","Kakuma Multi-purpose Youth Resource Centre","Komudei Primary School"],"Lopur":["Lopur Primary School","Lochoredome Water Point","Koyo Primary School","Locher Edome Primary School","Mon Primary School","Nadome Water Point","Kangitesiroi Primary School","Lochor-apua Water Point"],"Letea":["Lolemu Water Point","Loreng Trading Centre","Tulabalany Primary School","Musug Primary School","Letea Primary School","Loritit Primary School","Katelemot Water Point","Morukirio K Trading Centre","Lokipoto Primary School","Lochor Epetet Water Point","Kaibokolem Mobile","Kayotoberu Mobile","Narongole Mobile","Loito Mobile","Wotom Nursery School"],"Songot":["Lorau Water Point","Natamakaruo Water Point","Lokangae Mobile","Saint Mark Songot Primary School","Lopwarin Mobile","Lokudule Primary School","Emilait Primary School","Lomidat Primary School","Lokangae Primary School","Napeikar Mobile","Nakururum Primary School"],"Kalobeyei":["Kalobeyei Primary School","Oropoi Primary School","Natiira Primary School","Lapatui Trading Centre","Lokwamor Nursery School","Lonyuduk Primary School","Poroto Primary School","Didinget Primary School","Lokuanyia Primary School","Nakilekipus Water Point","Abaat Water Point","Wountos Primary School"],"Lokichoggio":["Nadapal Water Point","Lokichoggio Aic Girls Primary School","Lokichoggio Stadium","Lokariwon Mobile","Loteteleit Mobile","Loremit Mobile","Nabangakeny Primary School","Turkana Women Group Premises","Lokichoggio Multipurpose Co-operative Hall","Natumamong Water Point"],"Nanaam":["Lotikipi Water Point","Nanaam Primary School","Lomeyan Mobile","Lopiding Primary School","Kaeselem Mobile","Nataparin Mobile","Ekipor Mobile","Napopongoit Primary School","Saint Mathew Nadome Primary School","Eedot Mobile"],"Kerio Delta":["ng'imuriae Primary School","Nakwaperit Primary School","Kakimat Nursery School","Nangitony Nursery School","Nangolekuruk Nursery School","Merier Water Point","Achukut Water Point","Lodoket-engol Nursery School","Lore-amatet Nursery School","Nakechichok Nursery School","Lomunyen-kirion Nursery School","Nakalale Water Point","Nawoitorong Nursery School","Louwae Primary School","Mugur Water Point","lokwar-ang'ikaleso Nur. Sch","Kamekwi Nursery School","Kaikol Nursery School","Nakudet Water Point","Namaide Primary School","Lochor Edome Nursery School","ng'olpus Primary School","Akatorongot Nursery School","Lotukumo Primary School","ng'ataparin Nursery School","Ekwar Nursery School","Kerio Primary School","Nadoto Primary School","Nakurio Trading Centre","Kangirisae Primary School","Nakoret Trading Centre","Elelea Primary School","Lorengelup Primary School","Nanyangakikipi Primary School"],"Kang'atotha":["Namukuse Primary School","Loyoro Primary School","long'ech Primary School","Lochor Ekeny Primary School","Ille Primary School","kang'atotha Primary School","Naoros Trdading Centre","Akatuman Trading Centre","Lomoputh Primary School","kang'agetei Trading Centre","Lokipe Nursery School","Wadite Nursery School","Nayanae-ekalale Water Point","Nasura Water Point","Lobolo Mobie","Wadach Nursery School","Naipa Primary School","Katula Nursery School","Natagilae Primary School","Natiir Nursery School","Lotiira Nursery School","Nasekon Primary School","Nabulon Nursery School","Lokipetot Nursery School","Apeget Nursery School"],"Kalokol":["Namadak Primary School","Bwelekorot Primary School","Kalokol Primary School","Natole Primary School","Kalokol Girls Primary School","Lochuga Primary School","Nakiria Primary School","Lopangae Primary School","Kapua Primary School","Kalotum Primary School","Morungor Nursery School","Kanugimeri Mobile","Lokatikon Water Point","Nakingol Trading Centre","Narukopo Trading Centre","Surut Trading Centre","Lopongo Water Point","Loroo Nursery School","Maendeleo Nursery School","Faith Homes Primary School","Nakwamomwa Nursery"],"Lodwar Township":["Nakwamekwi Primary School","Lodwar Girls Primary School","Lodwar Mixed Primary School","saint Mary's Primary School","Kawalase Primary School","Handcraft Hall","Loyo Primary School","Chok Chok Nursery School","Nayanae-angikalalyo Nursery School","Monti Primary School","Kakwanyang Primary School","Natapar Kakono Primary School","Naregae Nursery School","Lore Nursery School","Ngasaga Centre","koriong'ora Ecd Centre","kaategeriong'or Primary Sch.","Bishop Mahon Primary School","Nadirikonyen Trading Centre","Lodwar Prison"],"Kanamkemer":["Loturerei Primary School","Kakemera Primary School","Napetao Nursery School","Kanamkemer Primary School","Napuu Primary School","Naotin Primary School","Lolupe Primary School","Canan Primary School","Pentecostal Assemblies Of God Nursery School","Outreach Nursery School","Nayuu Nursery School","Nabulon Girls Primary School","Nadipoe Mobile"],"Kotaruk/Lobei":["Lobei Primary School","Kalemunyang Primaryschool","Kabulokor Primary School","Kotaruk Primary School","Naremit Primary School","Ipa Primary School","Lokipetot Arengan Trading Centre","Sasak Echoke Primary School","Alab Lab Mobile","Lopiding-angichok Centre","Kakalel Primary School","Kangalita Primary School","lokitetot Areng'an Water Point","Moruongor Water Point","Ulukuse Mobile","Lomilo Primary School","Komera Nursery School","Konoo Primary School"],"Turkwel":["Napelilim Primary School","Nasiger Primary School","Lomil Primary School","Kalodeke Nursery School","Kaitese Primary School","Nadapal Primary School","Lokoyo Primary School","Napeikar Primary School","Kaapus Primary School","Kabaran Primary School","Lorugum Primary School","Turkwel Primary School","Nakamane Primary School","Kitoe Kirion Primary School","Nameyana Trading Centre","Kodopa Primary School","Kwamunyen Primary School","Kospir Primary School","Kalomeguri Primary School","Kacheimeri Primary School","Nakutan Primary School","Nabuin Primary School","Lopur Water Point","Nachuro Water Point","Loreng Sinyen","Katiyan Primary School","Lolupe Primary School","Lomwargete Nursery School","Tiya Primary School","Naagis Primary School","Kasongoletom Primary School","Kangataruk Water Point","Lolemgete Primary School","Lokatul Nursery School","Kaloboi Primary School","Kwataruk Water Point","Ngereny Primary School","Kaekoroengorok Nursery School","Loroo Primary School","Kalokutanyang Mobile","Moruese Primary School","Lochor Esekon Nur.sch","Konyipad Nursery School","Natuntun Nursery School","Natirae Nursery School","Kangimeriyek Store Centre","Lotagor Water Point","Nationakar Nursery School","Kanyangapus Water Point","Kalopuria Nursery School","Katukuri Nursery School","Lokorikipi Nursery School","Uren Puu Primary School","Lopedur"],"Loima":["Namoruputh Primary School","Lochor-ekuyen Primary School","Puch Water Point","Lochor Edome Nursery School","Lokwatuba Primary School","Namoruputh Trading Centre","Lochwa Illema Spring","Lochor-emeyan Primary School","Korimunyen Primary School"],"Lokiriama/Lorengippi":["Lokiriama Trading Centre","Ata-alokamusio Primary School","Lokiriama Primary School","Lorengippi Primary School","Loya Primary School","Lodwat Water Point","Kurio Nursery School","Lochor-alomala Primary School","Kaemanik Water Point","Urum Primary School","Kapese Water Point","Tama K Primary School","Kekoroe Akwaan Water Point","Kangipei Mobile","Nakwapua Centre","Namoni Angikala Centre","Lorengippi Trading Centre","Lokiriamet Water Point","Naoyapong Trading Centre","Telo Nursery School","Lochor-ekiru Water Point"],"Kaputir":["Kaputir Primary School.","Juluk Primary School.","Kapelibok Primary School.","Kapelibok Trading Center.","Lokwar Primary School","Lomerimudang Primary School.","Lomokomol Primary School","Lorogon Primary School","Choke Primary School","Nakuse Primary School.","Nakwamoru Primary School.","Nariwomoru Mobile.","Nawoyaregae Primary School."],"Katilu":["Angarabat Intergrated Primary School.","Kaekunyuk Nursery School.","Kagitankori Primary School","Kalemungorok Primary School.","Kalokoda Primary School","Ka Odon Primary School","Kangakimak Primary School","Kangirega Trading Centre","Katilu Primary School.","Korinyang Primary School.","Loitanit Water Point.","Lokapel Primary School.","Lokoropos Primary School","Lomonyang Primary School","Beye Primary School","Nakabosan Primary School.","Katwan Water Point","Makat Primary School","Naro Primary School.","Nyangaita Primary School.","Simailele Primary School"],"Lobokat":["Kainuk Trading Center.","Kainuk Primary School.","Kakongu Primary School","Koputiro Primary School.","Loyapat Primary School."],"Kalapata":["Chibilet Primary School.","Chok-chok Primary School.","Kaesamalit Nursery School.","Kakalel Primary School.","Kalapata Primary School.","Kalochan Primary School.","Kangakipur Primary School.","Katiir Primary School.","Katioko Primary School","Kotoro Primary School.","Lomeleku Primary School","Loupwala Primary School.","Nakaalei Primary School.","Nalemkais Primary School.","Riamawoi Primary School","Nalenkais Nursery School"],"Lokichar":["Edos Primary School.","Kachibilil Mobile.","Kaengolereng Primary School.","Kaichupaluk Primary School","Kaipokook Water Point","Kakalel Water Point.","Kakali Primary School","Kamarese Primary School.","Kapese Primary School.","Karoge Primary School.","Kasuroi Primary School.","Kaekoroeakwan Mobile.","Kekorisogol Primary School.","Kimabur Primary School.","Lochoremoit Primary School.","Lochwaa-kwan Primary School.","lochwang'ikamatak Primary School.","Lokaburu Primary School.","Lokichar Girls Primary School.","Lokichar Mixed Primary School.","Moru- Alligoi Water Point.","Nagetei Primary School.","Nakimak Primary School.","Kuja-amosing Water Point","Nalemusekon Primary School.","Namantalem Primary School.","Napusimoru Primary School.","nareng'emunyen Primary School.","Natorubei Mobile.","Nawoiyalim Mobile.","Ngakitoko K Water Point","Nakipi Primary School.","R.c.e.a. Sett. Nursery School.","Sopel Primary School."],"Kapedo/Napeitom":["Agule-atioko Mobile.","Arumrum Apalima Mobile.","Ekipor Mobile.","Erus Water Point.","Kachila Water Point.","Kamuge Mobile.","Kamuge Primary School.","Kamuge Trading Center.","Kangolio Mobile.","Kapedo Girls Primary School.","Kapedo Primary School.","Kariamangiro Water Point.","Kasimanang Water Point.","Kasinyen Water Point.","Katiir Water Point.","Kokure Water Point.","Lokidongito Mobile.","Lomaro Water Point.","Lomelo Primary School.","Lomelo Water Point.","Loreng Water Point.","Nadome Mobile.","Nadome Trading Center.","Nakwamwkwi Mobile.","Napeitom Mobile.","Napeitom Primary School.","Ng Aukon Water Point.","Ng Ilukia Mobile.","Silale Primary School.","Kamosing Water Point.","Kakitoe Water Point.","Kasorogol Water Point."],"Katilia":["Echoke Primary School.","Elelea Primary School.","Kaibole Primary School.","Katilia Aic Secondary School.","Katilia Trading Center.","Kemomeri Nursery School.","Kidewa Primary School.","Lokorkor Primary School.","Lomunyenakwan Primary School.","Lopeduru Primary School.","Nakotongwa Primary School.","Namaliteny Primary School.","Naukotlem Primary School.","Ngikengoi Nursery School.","Pargati Mobile.","kang'isaja Nursery School.","Riet Katilia Mobile."],"Lokori/Kochodin":["Arumrum-alochodae Mobile.","Kaaruko Primary School.","Kadam Primary School.","Kakulit Mobile.","Kang Itit Primary School.","Lochakula Mobile.","Lokichada Primary School.","Lokori Primary School.","Lokwamosing Primary School.","Lokwii Primary School.","Lopii Primary School.","Lotubae Primary School.","Morulem Trading Centre.","Nakukulas Primary School.","Nakwasinyen Primary School.","Napetao Water Point.","Riet Lokori Mobile.","Kaloporor Mobile.","Lokosimekori Mobile."]};
+
+  var CONS  = ["Turkana North","Turkana West","Turkana Central","Loima","Turkana South","Turkana East"];
+  var AREA  = { "Turkana North":"north","Turkana West":"west","Turkana Central":"central",
+                "Loima":"loima","Turkana South":"south","Turkana East":"east" };
+
+  /* Digital converts worse per person reached but scales cheaply; ground
+     converts far better because somebody is standing there. */
+  var R = { dOpen:0.040, gOpen:0.220, start:0.62, verify:0.71 };
+
+  var state = { con:"All", digital:0, ground:0, ward:null, live:{} };
+
+  var $   = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Math.round(n).toLocaleString("en-KE"); };
+  var pc  = function(n){ return (Math.round(n*100)/100).toFixed(2); };
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
+              return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
+
+  function statusOf(p){ return p < 3 ? "cold" : p < 8 ? "working" : "holding"; }
+  var LABEL = { cold:"Cold", working:"Working", holding:"Holding" };
+  var FILL  = { cold:"var(--sat-cold)", working:"var(--sat-working)", holding:"var(--sat-holding)" };
+  var INK   = { cold:"var(--tile-ink)", working:"var(--tile-ink-deep)", holding:"var(--tile-ink-deep)" };
+
+  /* ---- projection ------------------------------------------------------ */
+  function project(){
+    var dVer = state.digital * R.dOpen * R.start * R.verify;
+    var gVer = state.ground  * R.gOpen * R.start * R.verify;
+
+    var dW = 0, gW = 0, i;
+    for (i = 0; i < W.length; i++){ dW += W[i].rv * W[i].u; gW += W[i].rv * W[i].g; }
+
+    var rows = [], byName = {}, totalV = 0;
+    for (i = 0; i < W.length; i++){
+      var w = W[i];
+      var add = (dW ? dVer * (w.rv * w.u) / dW : 0) + (gW ? gVer * (w.rv * w.g) / gW : 0);
+      var v = Math.min(w.rv, Math.round(w.base + add + (state.live[w.name] || 0)));
+      var p = w.rv ? (v / w.rv) * 100 : 0;
+      totalV += v;
+      var row = { name:w.name, con:w.con, rv:w.rv, v:v, pct:p, st:statusOf(p),
+                  flipped:(statusOf(p) !== statusOf(w.base / w.rv * 100)) };
+      rows.push(row); byName[w.name] = row;
+    }
+    return { rows:rows, byName:byName, totalV:totalV, dVer:dVer, gVer:gVer, monthly:dVer + gVer };
+  }
+
+  /* ---- the cartogram --------------------------------------------------- */
+  function buildMap(){
+    var host = $("mapwrap"), html = "", i, c;
+    for (i = 0; i < CONS.length; i++){
+      c = CONS[i];
+      html += '<div class="blk blk--' + AREA[c] + '">' +
+                '<div class="blk-hd"><span class="nm">' + esc(c) + '</span>' +
+                '<span class="sm" data-consum="' + esc(c) + '">&mdash;</span></div>' +
+                '<div class="tiles" data-con="' + esc(c) + '"></div></div>';
+    }
+    host.innerHTML = html;
+
+    for (i = 0; i < CONS.length; i++){
+      var tiles = host.querySelector('.tiles[data-con="' + CONS[i] + '"]'), t = "";
+      for (var j = 0; j < W.length; j++){
+        if (W[j].con !== CONS[i]) continue;
+        t += '<button class="tile" type="button" data-ward="' + esc(W[j].name) + '" aria-pressed="false">' +
+               '<span class="tv"></span><span class="tn">' + esc(W[j].name) + '</span></button>';
+      }
+      tiles.innerHTML = t;
+    }
+
+    host.addEventListener("click", function(e){
+      var b = e.target.closest("button.tile");
+      if (!b) return;
+      selectWard(b.getAttribute("data-ward"));
+    });
+  }
+
+  function paintMap(p){
+    var tiles = document.querySelectorAll("#mapwrap .tile"), i;
+    for (i = 0; i < tiles.length; i++){
+      var el = tiles[i], r = p.byName[el.getAttribute("data-ward")];
+      el.style.background = FILL[r.st];
+      el.style.color = INK[r.st];
+      el.querySelector(".tv").textContent = pc(r.pct) + "%";
+      el.setAttribute("aria-pressed", String(state.ward === r.name));
+      el.classList.toggle("is-dim", state.con !== "All" && r.con !== state.con);
+      el.setAttribute("title", r.name + " — " + fmt(r.v) + " verified of " + fmt(r.rv) +
+                      " registered (" + pc(r.pct) + "%, " + LABEL[r.st] + ")");
+    }
+    var sums = document.querySelectorAll("#mapwrap [data-consum]");
+    for (i = 0; i < sums.length; i++){
+      var con = sums[i].getAttribute("data-consum"), rv = 0, v = 0;
+      for (var j = 0; j < p.rows.length; j++){
+        if (p.rows[j].con === con){ rv += p.rows[j].rv; v += p.rows[j].v; }
+      }
+      sums[i].textContent = pc(rv ? v / rv * 100 : 0) + "% of " + fmt(rv);
+    }
+  }
+
+  /* ---- ward drawer ----------------------------------------------------- */
+  function selectWard(name){
+    state.ward = (state.ward === name) ? null : name;
+    render();
+    if (state.ward){
+      var d = $("drawer");
+      if (d.getBoundingClientRect().bottom > window.innerHeight){
+        d.scrollIntoView({ behavior:"smooth", block:"nearest" });
+      }
+    }
+  }
+
+  function paintDrawer(p){
+    var d = $("drawer");
+    if (!state.ward){ d.hidden = true; return; }
+    d.hidden = false;
+
+    var r = p.byName[state.ward];
+    var st = STATIONS[r.name] || [];
+    $("dw-name").textContent = r.name;
+    $("dw-con").textContent  = r.con + " constituency";
+    $("dw-band").textContent = LABEL[r.st];
+    $("dw-rv").textContent   = fmt(r.rv);
+    $("dw-v").textContent    = fmt(r.v);
+    $("dw-pct").textContent  = pc(r.pct) + "%";
+    $("dw-st").textContent   = st.length;
+
+    /* What it takes to reach the next band — the number a coordinator needs. */
+    var nextAt = r.pct < 3 ? 3 : r.pct < 8 ? 8 : null;
+    if (nextAt === null){
+      $("dw-gap").innerHTML = "This ward is <b>Holding</b>. The work here shifts from " +
+        "recruiting to keeping in touch &mdash; and to recruiting from it, since its " +
+        "supporters can bring in wards next door.";
+    } else {
+      var need = Math.ceil(r.rv * nextAt / 100) - r.v;
+      $("dw-gap").innerHTML = "<b>" + fmt(Math.max(0, need)) + " more verified supporters</b> " +
+        "moves this ward from " + LABEL[r.st] + " to " +
+        (nextAt === 3 ? "Working" : "Holding") + " &mdash; that is " + nextAt +
+        "% of its " + fmt(r.rv) + " registered voters.";
+    }
+
+    /* A station that is Mobile or a Water Point is the whole USSD argument. */
+    var mobile = 0, li = "";
+    for (var i = 0; i < st.length; i++){
+      var isMob = /Mobile|Water Point/i.test(st[i]);
+      if (isMob) mobile++;
+      li += '<li><span class="ix">' + (i + 1) + '</span><span>' + esc(st[i]) + '</span>' +
+            (isMob ? '<span class="mob">No fixed site</span>' : '') + '</li>';
+    }
+    $("dw-stations").innerHTML = li || '<li><span>No stations listed.</span></li>';
+    $("dw-stlabel").innerHTML = "Polling stations &mdash; " + st.length +
+      (mobile ? ', <span style="color:var(--signal)">' + mobile + " with no fixed site</span>" : "");
+  }
+
+  /* ---- the board ------------------------------------------------------- */
+  var MAXPCT = 12;
+
+  function renderBoard(p){
+    var rows = p.rows.slice().sort(function(a,b){ return b.pct - a.pct; });
+    if (state.con !== "All") rows = rows.filter(function(r){ return r.con === state.con; });
+
+    var html = "", cold = 0, rv = 0, v = 0;
+    for (var i = 0; i < rows.length; i++){
+      var r = rows[i];
+      if (r.st === "cold") cold++;
+      rv += r.rv; v += r.v;
+      html +=
+        '<button class="wardrow' + (r.flipped ? " is-flip" : "") + '" type="button"' +
+          ' data-ward="' + esc(r.name) + '" aria-pressed="' + (state.ward === r.name) + '"' +
+          ' title="' + esc(r.name) + ' — ' + fmt(r.v) + ' verified of ' + fmt(r.rv) +
+          ' registered voters (' + pc(r.pct) + '%)">' +
+          '<span class="wname"><b>' + esc(r.name) + '</b><span>' + esc(r.con) + '</span></span>' +
+          '<span class="meter">' +
+            '<i style="width:' + Math.min(100, r.pct / MAXPCT * 100).toFixed(2) +
+              '%;background:' + FILL[r.st] + '"></i>' +
+            '<span class="tick" style="left:' + (3 / MAXPCT * 100).toFixed(2) + '%"></span>' +
+            '<span class="tick" style="left:' + (8 / MAXPCT * 100).toFixed(2) + '%"></span>' +
+          '</span>' +
+          '<span class="wpct">' + pc(r.pct) + '%</span>' +
+          '<span class="wstat" data-s="' + r.st + '">' + LABEL[r.st] + '</span>' +
+        '</button>';
+    }
+    $("board").innerHTML = html;
+    $("bf-wards").textContent    = rows.length;
+    $("bf-cold").textContent     = cold;
+    $("bf-verified").textContent = fmt(v);
+    $("bf-pct").textContent      = (rv ? pc(v / rv * 100) : "0.00") + "%";
+  }
+
+  /* ---- trajectory ------------------------------------------------------ */
+  function renderTrajectory(p){
+    var svg = $("traj-svg");
+    var Wd = 760, Ht = 190, L = 46, Rr = 12, T = 12, B = 26;
+    var days = 90, perDay = p.monthly / 30;
+    var start = p.totalV, end = start + perDay * days;
+
+    /* A scale with a round top, so every gridline names a real value. The
+       12,000 floor is deliberate: without it, a flat line at zero reach fills
+       ninety per cent of the panel and reads as a result rather than as
+       nothing happening. With it, today's register sits low and the headroom
+       is the point. */
+    var raw = Math.max(Math.max(end, start) * 1.12, 12000);
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var top = Math.ceil(raw / (mag / 2)) * (mag / 2);
+
+    var x = function(d){ return L + (d / days) * (Wd - L - Rr); };
+    var y = function(v){ return T + (1 - v / top) * (Ht - T - B); };
+
+    var area = "M " + x(0) + " " + y(start).toFixed(1);
+    var line = area;
+    for (var d = 1; d <= days; d++){
+      var v = start + perDay * d;
+      area += " L " + x(d).toFixed(1) + " " + y(v).toFixed(1);
+      line += " L " + x(d).toFixed(1) + " " + y(v).toFixed(1);
+    }
+    area += " L " + x(days).toFixed(1) + " " + y(0).toFixed(1) +
+            " L " + x(0).toFixed(1) + " " + y(0).toFixed(1) + " Z";
+
+    var g = "", i, gv;
+    for (i = 0; i <= 4; i++){
+      gv = top * i / 4;
+      g += '<line x1="' + L + '" y1="' + y(gv).toFixed(1) + '" x2="' + (Wd - Rr) +
+           '" y2="' + y(gv).toFixed(1) + '" stroke="var(--hairline-soft)" stroke-width="1"/>' +
+           '<text x="' + (L - 8) + '" y="' + (y(gv) + 3.5).toFixed(1) +
+           '" text-anchor="end" font-size="10" font-weight="700" fill="var(--type-low)">' +
+           fmt(gv) + '</text>';
+    }
+    var marks = [[0,"Today"],[21,"Three wards live"],[63,"North opens"],[90,"Day 90"]];
+    for (i = 0; i < marks.length; i++){
+      var mx = x(marks[i][0]);
+      g += '<line x1="' + mx.toFixed(1) + '" y1="' + T + '" x2="' + mx.toFixed(1) +
+           '" y2="' + y(0).toFixed(1) + '" stroke="var(--hairline)" stroke-width="1" stroke-dasharray="2 3"/>' +
+           '<text x="' + mx.toFixed(1) + '" y="' + (Ht - 8) +
+           '" text-anchor="' + (i === 0 ? "start" : i === marks.length - 1 ? "end" : "middle") +
+           '" font-size="9.5" font-weight="700" letter-spacing="0.06em" fill="var(--type-low)">' +
+           marks[i][1] + '</text>';
+    }
+
+    svg.innerHTML =
+      '<title id="traj-t">Projected verified supporters over ninety days at the current reach settings</title>' +
+      '<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="var(--signal-fill)" stop-opacity="0.28"/>' +
+        '<stop offset="100%" stop-color="var(--signal-fill)" stop-opacity="0.02"/>' +
+      '</linearGradient></defs>' + g +
+      '<path d="' + area + '" fill="url(#tg)" stroke="none"/>' +
+      '<path d="' + line + '" fill="none" stroke="var(--signal-fill)" stroke-width="2" ' +
+        'stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + x(days).toFixed(1) + '" cy="' + y(end).toFixed(1) +
+        '" r="4" fill="var(--signal-fill)" stroke="var(--ink-800)" stroke-width="2"/>';
+
+    $("traj-end").textContent = fmt(end) + " by day 90";
+  }
+
+  /* ---- funnel + verdict ------------------------------------------------ */
+  function renderFunnel(p){
+    var reach = state.digital + state.ground;
+    var open  = state.digital * R.dOpen + state.ground * R.gOpen;
+
+    $("f-reach").textContent    = fmt(reach);
+    $("f-open").textContent     = fmt(open);
+    $("f-start").textContent    = fmt(open * R.start);
+    $("f-verified").textContent = fmt(p.monthly);
+    $("o-digital").textContent  = fmt(state.digital);
+    $("o-ground").textContent   = fmt(state.ground);
+
+    var HARD = ["Kibish","Lapur","Nanaam","Loima","Songot","Kapedo/Napeitom","Kalapata"];
+    var coldHard = 0;
+    for (var i = 0; i < HARD.length; i++){
+      if (p.byName[HARD[i]].st === "cold") coldHard++;
+    }
+
+    var msg;
+    if (!state.digital && !state.ground){
+      msg = "Both dials are at zero &mdash; the map and the board are showing today's register. " +
+            "Push <b>digital</b> on its own and watch Lodwar and Kakuma warm up while Kibish, " +
+            "Lapur and Nanaam stay exactly where they are. That gap is the argument for USSD, " +
+            "and it is the one thing a digital-only campaign cannot buy its way out of.";
+    } else if (!state.ground){
+      msg = "Digital only. The towns are moving and <b>" + coldHard + " of the 7 hardest-to-reach " +
+            "wards are still cold</b>. We can spend this budget three times over and Kibish will " +
+            "not move &mdash; six of its ten polling stations are a mobile unit or a water point. " +
+            "<b>Digital wins Lodwar. It does not win Turkana.</b>";
+    } else if (!state.digital){
+      msg = "Ground only. This reaches everywhere and converts more than five times better per " +
+            "person &mdash; but it costs fuel, days and agents, and it does not compound. " +
+            "<b>" + coldHard + " of the 7 hardest wards still cold.</b> Digital is what makes " +
+            "each of those trips worth more than the trip itself.";
+    } else {
+      var ratio = state.digital / (state.digital + state.ground);
+      msg = "Both running. <b>" + fmt(p.monthly) + " newly verified supporters a month</b>, " +
+            fmt(p.totalV) + " on the register today, and <b>" + coldHard +
+            " of the 7 hardest wards still cold</b>. " +
+            (ratio > 0.72
+              ? "Weighted hard to digital &mdash; efficient in the towns, but the north is being left behind on this mix."
+              : ratio < 0.28
+                ? "Weighted hard to the ground &mdash; thorough and even, but expensive per name and slow to compound."
+                : "This is the mix that moves the whole county rather than the half of it already online.");
+    }
+    $("verdict").innerHTML = msg;
+  }
+
+  function render(){
+    var p = project();
+    paintMap(p);
+    paintDrawer(p);
+    renderBoard(p);
+    renderFunnel(p);
+    renderTrajectory(p);
+    $("hero-verified").textContent = fmt(p.totalV);
+    $("tb-ver").textContent = fmt(p.totalV);
+    $("tb-sat").textContent = pc(p.totalV / 238528 * 100) + "%";
+    var cold = 0;
+    for (var i = 0; i < p.rows.length; i++){ if (p.rows[i].st === "cold") cold++; }
+    $("tb-cold").textContent = cold;
+    return p;
+  }
+
+  /* ---- filter + dials -------------------------------------------------- */
+  (function(){
+    var host = $("con-filter"), all = ["All"].concat(CONS), html = "";
+    for (var i = 0; i < all.length; i++){
+      html += '<button class="seg" type="button" data-con="' + esc(all[i]) + '" aria-pressed="' +
+              (all[i] === "All") + '">' + (all[i] === "All" ? "All 30 wards" : esc(all[i])) + "</button>";
+    }
+    host.innerHTML = html;
+    host.addEventListener("click", function(e){
+      var b = e.target.closest("button[data-con]");
+      if (!b) return;
+      state.con = b.getAttribute("data-con");
+      var btns = host.querySelectorAll("button[data-con]");
+      for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", String(btns[i] === b));
+      render();
+    });
+  })();
+
+  $("board").addEventListener("click", function(e){
+    var b = e.target.closest("button.wardrow");
+    if (b) selectWard(b.getAttribute("data-ward"));
+  });
+  $("clear-ward").addEventListener("click", function(){ state.ward = null; render(); });
+  $("d-digital").addEventListener("input", function(e){ state.digital = Number(e.target.value); render(); });
+  $("d-ground").addEventListener("input",  function(e){ state.ground  = Number(e.target.value); render(); });
+  $("reset").addEventListener("click", function(){
+    state.digital = 0; state.ground = 0;
+    $("d-digital").value = 0; $("d-ground").value = 0;
+    render();
+  });
+
+  /* ---- live registration ----------------------------------------------- */
+  var reg = { code:null, stage:"details" };
+
+  var ALPHABET = "ACDEFGHJKMNPQRTUVWXY2346789";   /* the register's own alphabet */
+  function referralCode(){
+    var s = "";
+    for (var i = 0; i < 6; i++) s += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+    return "LORE-" + s;
+  }
+
+  /* Mirrors normalizeKenyanPhone: 07…, +2547…, 2547… all collapse to one string. */
+  function normalizePhone(raw){
+    var d = String(raw).replace(/[^\d+]/g, "");
+    if (d.indexOf("+254") === 0) d = d.slice(4);
+    else if (d.indexOf("254") === 0) d = d.slice(3);
+    else if (d.charAt(0) === "0") d = d.slice(1);
+    if (!/^[17]\d{8}$/.test(d)) return null;
+    return "+254" + d;
+  }
+  function maskPhone(e164){
+    return e164.slice(0, 7) + "••• ••• " + e164.slice(-3);
+  }
+
+  (function buildWardSelect(){
+    var sel = $("r-ward"), html = "", i, j;
+    for (i = 0; i < CONS.length; i++){
+      html += '<optgroup label="' + esc(CONS[i]) + '">';
+      for (j = 0; j < W.length; j++){
+        if (W[j].con === CONS[i]) html += '<option value="' + esc(W[j].name) + '">' + esc(W[j].name) + "</option>";
+      }
+      html += "</optgroup>";
+    }
+    sel.innerHTML = html;
+    sel.value = "Kakuma";
+  })();
+
+  function fillStations(){
+    var ward = $("r-ward").value, st = STATIONS[ward] || [], html = "";
+    for (var i = 0; i < st.length; i++) html += '<option value="' + esc(st[i]) + '">' + esc(st[i]) + "</option>";
+    $("r-station").innerHTML = html;
+    var mobile = st.filter(function(s){ return /Mobile|Water Point/i.test(s); }).length;
+    $("r-sthint").innerHTML = st.length + " real stations in " + esc(ward) +
+      (mobile ? ' &middot; <b style="color:var(--signal)">' + mobile + " with no fixed site</b>" : "");
+  }
+  $("r-ward").addEventListener("change", fillStations);
+  fillStations();
+
+  $("r-phone").addEventListener("input", function(){
+    var n = normalizePhone($("r-phone").value);
+    $("r-phint").innerHTML = n
+      ? "Stored as <b>" + n + "</b>. One person, one number &mdash; enforced by the database."
+      : '<b style="color:var(--alarm)">Not a Kenyan mobile number yet.</b> Try 0712 345 678.';
+  });
+
+  function setStage(s){
+    reg.stage = s;
+    $("stage-details").hidden = (s !== "details");
+    $("stage-verify").hidden  = (s !== "verify");
+    $("sd1").classList.toggle("is-on", true);
+    $("sd2").classList.toggle("is-on", s === "verify" || s === "done");
+    $("sd3").classList.toggle("is-on", s === "done");
+  }
+
+  $("r-send").addEventListener("click", function(){
+    var name = $("r-name").value.trim();
+    if (name.split(/\s+/).length < 2){
+      $("r-phint").innerHTML = '<b style="color:var(--alarm)">Include a first and last name.</b>';
+      $("r-name").focus(); return;
+    }
+    var phone = normalizePhone($("r-phone").value);
+    if (!phone){
+      $("r-phint").innerHTML = '<b style="color:var(--alarm)">Enter a Kenyan mobile number.</b> Try 0712 345 678.';
+      $("r-phone").focus(); return;
+    }
+    reg.code = String(Math.floor(100000 + Math.random() * 900000));
+    $("sms-code").textContent = reg.code;
+    $("sms-time").textContent = new Date().toLocaleTimeString("en-KE", { hour:"2-digit", minute:"2-digit" });
+    $("sms").hidden = false;
+    $("reg-empty").hidden = true;
+    $("receipt").hidden = true;
+    $("r-code").value = "";
+    $("r-cerr").innerHTML = "&nbsp;";
+    setStage("verify");
+    $("r-code").focus();
+  });
+
+  $("r-resend").addEventListener("click", function(){
+    reg.code = String(Math.floor(100000 + Math.random() * 900000));
+    $("sms-code").textContent = reg.code;
+    $("sms-time").textContent = new Date().toLocaleTimeString("en-KE", { hour:"2-digit", minute:"2-digit" });
+    $("r-cerr").innerHTML = "A new code replaces the old one. The old one stops working.";
+  });
+
+  $("r-verify").addEventListener("click", function(){
+    var entered = $("r-code").value.trim();
+    if (entered !== reg.code){
+      $("r-cerr").innerHTML = '<b style="color:var(--alarm)">That code is not right.</b> Check the message.';
+      return;
+    }
+    var ward    = $("r-ward").value;
+    var station = $("r-station").value;
+    var phone   = normalizePhone($("r-phone").value);
+
+    state.live[ward] = (state.live[ward] || 0) + 1;
+
+    $("rc-name").textContent    = $("r-name").value.trim();
+    $("rc-phone").textContent   = maskPhone(phone);
+    $("rc-ward").textContent    = ward;
+    $("rc-station").textContent = station;
+    $("rc-when").textContent    = new Date().toLocaleTimeString("en-KE", { hour:"2-digit", minute:"2-digit" });
+    $("rc-ref").textContent     = referralCode();
+
+    var p = render();
+    var r = p.byName[ward];
+    $("rc-effect").innerHTML = esc(ward) + " is now <b>" + pc(r.pct) + "%</b> of its " +
+      fmt(r.rv) + " registered voters, from " + fmt(r.v) + " verified supporters. " +
+      "The county figure at the top of this page moved by one.";
+
+    $("sms").hidden = true;
+    $("receipt").hidden = false;
+    setStage("done");
+    $("stage-details").hidden = true;
+    $("stage-verify").hidden = true;
+  });
+
+  $("reg-restart").addEventListener("click", function(){
+    reg.code = null;
+    $("sms").hidden = true;
+    $("receipt").hidden = true;
+    $("reg-empty").hidden = false;
+    $("r-code").value = "";
+    $("r-cerr").innerHTML = "&nbsp;";
+    setStage("details");
+  });
+
+  /* ---- go -------------------------------------------------------------- */
+  buildMap();
+  render();
+})();
+</script>
+
+</body>
+</html>
