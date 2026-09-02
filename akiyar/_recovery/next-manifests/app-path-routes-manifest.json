@@ -1,0 +1,22 @@
+{
+  "/(site)/about/page": "/about",
+  "/(site)/contact/page": "/contact",
+  "/(site)/gallery/page": "/gallery",
+  "/(site)/get-involved/page": "/get-involved",
+  "/(site)/manifesto/page": "/manifesto",
+  "/(site)/page": "/",
+  "/(site)/privacy/page": "/privacy",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/content/page": "/admin/content",
+  "/admin/export/route": "/admin/export",
+  "/admin/page": "/admin",
+  "/apple-icon.png/route": "/apple-icon.png",
+  "/icon.png/route": "/icon.png",
+  "/join/page": "/join",
+  "/login/page": "/login",
+  "/manifest.webmanifest/route": "/manifest.webmanifest",
+  "/opengraph-image.jpg/route": "/opengraph-image.jpg",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml"
+}
