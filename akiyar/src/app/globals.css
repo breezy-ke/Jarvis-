@@ -1,0 +1,366 @@
+@import "tailwindcss";
+@import "./campaign.css";
+
+/*
+  Akiyar — the supporter register
+  ===============================
+
+  These are the tokens for the whole site — the campaign pages and the
+  supporter register alike. They were once duplicated into a WordPress
+  theme.json, because the two halves were separate applications on separate
+  hosts that had to be kept in visual sync by hand. They are one Next.js app
+  now, `campaign.css` declares no colours of its own, and this is the only
+  place any of these values exists.
+
+  If you change one, run `npm run check:contrast` — it reads this file and
+  fails if the design drifts out of WCAG AA.
+
+  WHY THE GROUND IS LIGHT, AND WHAT THAT COST
+
+  This design was black for a reason: ODM orange measures 2.61:1 on white, so a
+  light ground cannot let the brand colour carry text. Moving to light means
+  paying that bill rather than pretending it does not exist.
+
+  It is paid with ONE deep orange instead of two colours. --signal is #9f5015,
+  the party orange darkened until it clears AA, and it is symmetrical: 5.54:1 as
+  text on the page, and 5.54:1 the other way round when --screen sits on it as a
+  button label. That symmetry is why a single token still works everywhere it
+  used to, as text and as a fill, with no call site needing to know which.
+
+  The undarkened #f47b20 survives as --signal-fill, for bands, rules and meters
+  where nothing has to be read on top of it. That is where the party's actual
+  colour still shows at full strength.
+
+  ONE COMMITTED LOOK
+
+  There is no light mode. A register that renders differently depending on a
+  visitor's OS setting is two designs to verify and two sets of contrast numbers
+  to defend, for a form that takes ninety seconds to fill in. color-scheme is
+  declared dark so the browser paints its own furniture — scrollbars, form
+  controls, autofill — to match, rather than flashing white.
+*/
+
+/* ---------------------------------------------------------------- tokens */
+
+:root {
+  /*
+    Grounds. Only --screen is ever a page background. Everything else is a
+    surface that sits on it, and depth comes from hairlines and light rather
+    than from a second colour field.
+  */
+  --screen: #fbfaf8;
+  --ink-800: #f2efe9;
+  --ink-700: #ffffff;
+  --ink-600: #f4f1ec;
+
+  /*
+    Light. The signal is the only accent, and it behaves like a light source.
+    ODM orange: the party is the orange party, so here the party colour and the
+    visual hierarchy are the same thing rather than two systems to reconcile.
+
+    There used to be a third colour here, --ember, described as "the field
+    identity — what supporters actually wear". That was written when the design
+    was themed yellow and orange was a separate note. Supporters wear orange, so
+    ember and the signal became one idea and the duplicate is gone.
+
+    --signal is the party orange darkened to clear AA on a light ground. It
+    reads as text AND takes --screen as a label on top of it, both at 5.54:1.
+    --signal-fill is the undarkened party orange, for surfaces nothing is read
+    on: the ticker band, a lit rule, a meter. Never put text on --signal-fill
+    unless that text is --type; white on it measures 2.73:1.
+  */
+  --signal: #9f5015;
+  --signal-fill: #f47b20;
+  --signal-deep: #7a3e10;
+  --signal-bright: #c3621a;
+
+  /* State. Bright enough to read on the ground, never used as the only cue. */
+  --verified: #157f4a;
+  --alarm: #b3261e;
+  --warn: #8a5a00;
+
+  /* Type. Named for the job, not the colour — these were light on a dark
+     ground and are dark on a light one; every call site meant "body text". */
+  --type: #14181f;
+  --type-mid: #4a5260;
+  --type-low: #6b7381;
+
+  /*
+    Edges. A hairline is light at low opacity, not a grey line at full strength.
+    --field-line is opaque and stronger, because a form control has to announce
+    where it is before it is touched: an input a supporter cannot find is the
+    most expensive failure on this site.
+  */
+  --hairline: rgba(20, 24, 31, 0.09);
+  --hairline-strong: rgba(20, 24, 31, 0.15);
+  --hairline-lit: rgba(244, 123, 32, 0.65);
+  --field-line: #767c86;
+
+  /* Depth. A glow reads as light emitted from a dark page; on paper the same
+     values read as dirt. These are shadows now — a tight contact shadow plus a
+     wide soft one, which is what actually makes a card sit above white. */
+  --bloom-signal: 0 6px 20px -8px rgb(244 123 32 / 0.55);
+  --bloom-tight: 0 1px 2px rgb(20 24 31 / 0.07), 0 10px 24px -12px rgb(159 80 21 / 0.45);
+  --depth: 0 1px 2px rgb(20 24 31 / 0.05), 0 14px 36px -14px rgb(20 24 31 / 0.16);
+
+  /* Motion. Entrances decelerate in; exits are quicker. */
+  --ease-in-frame: cubic-bezier(0.16, 1, 0.3, 1);
+  --cut: 240ms;
+  --dissolve: 620ms;
+
+  color-scheme: light;
+
+  /*
+    Semantic aliases.
+
+    Every component in this app was already written against these names rather
+    than against raw colours, which is why the whole surface could be re-grounded
+    by editing this block. Keep it that way: no component should ever contain a
+    hex value.
+  */
+  --bg: var(--screen);
+  --surface: var(--ink-800);
+  --surface-2: var(--ink-600);
+  --line: var(--hairline-strong);
+  --line-soft: var(--hairline);
+  --text: var(--type);
+  --text-2: var(--type-mid);
+  --text-3: var(--type-low);
+
+  /* The interactive accent is the signal now, in both directions. On a dark
+     ground there is no reason for it to be anything else. */
+  --accent: var(--signal);
+  --accent-ink: var(--screen);
+  /* --accent is the deep orange, so its label is the page ground: 5.54:1. */
+
+  /* These two existed only to let brand hues carry type on white. Kept as
+     aliases so older components still resolve, both now pointing at the real
+     colours, which need no substitute here. */
+  --gold-ink: var(--signal);
+  --green-ink: var(--verified);
+
+  --shadow: var(--depth);
+  --shadow-lg: var(--depth);
+}
+
+/* ------------------------------------------------------- tailwind theme */
+
+@theme inline {
+  /* The design's own grounds, named as the design names them. */
+  --color-screen: var(--screen);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-signal: var(--signal);
+  --color-signal-fill: var(--signal-fill);
+  --color-signal-bright: var(--signal-bright);
+  --color-type: var(--type);
+  --color-type-mid: var(--type-mid);
+  --color-type-low: var(--type-low);
+  --color-hairline: var(--hairline);
+  --color-field-line: var(--field-line);
+
+  /* Semantic tokens. Components use only these. */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-body: var(--text);
+  --color-muted: var(--text-2);
+  --color-faint: var(--text-3);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-gold-ink: var(--gold-ink);
+  --color-green-ink: var(--green-ink);
+  --color-verified: var(--verified);
+  --color-alarm: var(--alarm);
+  --color-warn: var(--warn);
+
+  /*
+    One family, two roles.
+
+    Archivo is variable in both weight (400-900) and width (62-125%), which is
+    where this design gets its typographic range: condensed caps for labels,
+    expanded heavy for the title card, one 90KB file for all of it. The campaign
+    site uses the same face from the same source, which is most of why the two
+    read as one product.
+
+    No webfont round-trip: the file is bundled and served from this origin, which
+    matters on a weak connection far more than the choice of face does.
+  */
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Corners are nearly square. A 2px radius reads as a printed edge; a 12px one
+     reads as a web app, and this is meant to feel like a document. */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+}
+
+/* ------------------------------------------------------------- elements */
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 17px; /* generous by default — this is read outdoors, on small phones */
+  line-height: 1.66;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+  The focus ring is drawn in the signal colour at 12.88:1 against the ground and
+  is never removed. A supporter filling this in on a keyboard, or with a screen
+  magnifier, has to be able to see where they are.
+*/
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* iOS zooms the whole page when a focused input is under 16px. Never let it. */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: max(1rem, 16px);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Long ward and polling-station names must break rather than push the page. */
+h1,
+h2,
+h3,
+p,
+li,
+td,
+th {
+  overflow-wrap: break-word;
+}
+
+/* ------------------------------------------------------------ utilities */
+
+/*
+  Headlines. Expanded and tight: Archivo's width axis is what gives a heading
+  presence here, so the size does not have to. Sentence case, because this is a
+  campaign asking a stranger for their phone number and shouting is the wrong
+  register.
+*/
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 100%;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+/* For the title card and the moment a supporter is confirmed. */
+@utility display-black {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 105%;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+/* The condensed caps label. The other end of the same width axis. */
+@utility label-caps {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/*
+  The rule.
+
+  The signature edge of this design, and the replacement for the printed party
+  band the previous build used at the top of every surface. It is a hairline that
+  is lit at one end and fades out — a light source running along an edge rather
+  than a decorative stripe. Used at the head of the register card, the admin
+  dashboard, and every full-page state.
+*/
+@utility rule-lit {
+  background: linear-gradient(
+    90deg,
+    var(--signal) 0%,
+    rgb(244 123 32 / 0.55) 22%,
+    var(--hairline) 55%,
+    transparent 100%
+  );
+}
+
+/* Depth, for the one card that has to float above the ground. */
+@utility shadow-card {
+  box-shadow: var(--depth);
+}
+
+@utility shadow-float {
+  box-shadow: var(--depth);
+}
+
+/* The register button, lit before it is touched. */
+@utility bloom {
+  box-shadow: var(--bloom-tight);
+}
+
+/* Wide content scrolls inside its own container so the page body never does. */
+@utility scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  Film grain over a full-bleed photograph. Static, one tiled SVG, and only on
+  screens wide enough that the device is likely to cope — the same treatment and
+  the same reasoning as the campaign site's title card.
+*/
+@utility grain {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+    opacity: 0.035;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+}
+
+/*
+  A supporter who has asked their system for less motion gets none of it. This
+  is deliberately blunt: there is no animation in this app whose absence costs
+  the user anything, so there is nothing to preserve selectively.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
