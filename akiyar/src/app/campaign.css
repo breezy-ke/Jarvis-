@@ -1,0 +1,2056 @@
+/*
+  The campaign site
+  =================
+
+  This is the design that used to live in a WordPress theme's style.css, moved
+  into the Next.js app so the campaign site and the supporter register are one
+  application on one domain instead of two properties that had to be kept in
+  visual sync by hand. That theme has since been deleted; it is in git history
+  if the original is ever wanted.
+
+  Nothing here is a new decision. The class names, the tokens, the measurements
+  and the reasoning were carried over verbatim from the shipped theme, because
+  that design was reviewed, contrast-checked and install-verified. What changed
+  is only the delivery: WordPress block classes (`.wp-block-*`) are gone, and
+  the components that used to be PHP patterns are React in `src/components/site`.
+
+  The grounds, the signal, the type scale and the hairlines are declared once in
+  `globals.css` and used from here — this file defines no colours of its own. If
+  you change one, run `npm run check:contrast`.
+*/
+
+:root {
+  /* The letterbox aspect. 2.39:1 is anamorphic scope. */
+  --scope: 2.39;
+
+  /* Exits are quicker than entrances, because nobody waits for a thing to leave. */
+  --ease-out-frame: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Film grain: one small SVG, tiled, at 3.5%. It is what stops a large
+     near-black area looking like a flat CSS colour on a good screen. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* The hero stops moving entirely. The component already refuses to rotate
+     under this setting, so all that is left is to make sure the frame it does
+     show is not mid-drift and the caption does not fly in.
+
+     Note what is NOT removed: the crossfade opacity and the dot colour change.
+     Reduced motion means less movement, not less feedback — a visitor who taps
+     a dot still has to be able to tell that something happened. */
+  .hero__frame img,
+  .hero__frame[data-drift] img {
+    transform: none;
+    transition: none;
+  }
+
+  .hero__caption-line {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------- the browser's own surfaces
+
+   The parts nobody draws still belong to the design. A themed page with a
+   default caret, a default scrollbar and a default selection colour is a page
+   that was assembled; these are four lines that say otherwise, and on a
+   campaign site they are read by the same people deciding whether the
+   candidate is serious about detail. */
+
+::selection {
+  background: var(--signal);
+  color: var(--screen);
+}
+
+/* The caret is the only part of a form the visitor watches continuously. */
+:root {
+  caret-color: var(--signal);
+  accent-color: var(--signal);
+  scrollbar-color: var(--type-low) transparent;
+  scrollbar-width: thin;
+}
+
+/* WebKit and Blink ignore scrollbar-color on some platforms, so the same
+   result is stated twice rather than left to chance. */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border: 3px solid var(--screen);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--type-low);
+}
+
+/* A keyboard user on a dark page loses the focus ring against a photograph, so
+   over imagery it gets a dark halo to sit on. */
+.frame :where(a, button):focus-visible,
+.wall :where(a, button):focus-visible {
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgb(5 6 10 / 0.85);
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.85rem 1.25rem;
+  background: var(--signal);
+  color: var(--screen);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ------------------------------------------------------------- the slate
+
+   Every section opens with a slate: a two-digit index, a hairline, and a label
+   in condensed caps. It is the device that makes the page read as a sequence
+   rather than a stack of cards. */
+
+.slate {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--type-mid);
+}
+
+.slate__index {
+  color: var(--signal);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.slate__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, var(--hairline-lit), var(--hairline) 40%, transparent);
+}
+
+/* -------------------------------------------------------------- the reel
+
+   Sections. They cut on a hairline and they are generously apart, because the
+   air is most of what separates this from a template. */
+
+.reel {
+  position: relative;
+  padding-block: clamp(4.5rem, 9vw, 8.5rem);
+  border-top: 1px solid var(--hairline);
+}
+
+.reel--open {
+  border-top: 0;
+}
+
+/* One point of light on the cut, aligned with the content column. A section
+   boundary that glows slightly reads as deliberate; a plain grey line reads as
+   a default. */
+.reel::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: 0;
+  width: min(38%, 30rem);
+  height: 1px;
+  background: linear-gradient(90deg, var(--hairline-lit), transparent);
+  pointer-events: none;
+}
+
+.reel--open::before {
+  display: none;
+}
+
+.reel--tight {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.reel--reel-break {
+  padding-block: clamp(6rem, 13vw, 12rem);
+}
+
+.reel--raised {
+  background: linear-gradient(180deg, var(--ink-800), var(--screen));
+}
+
+/*
+  The content column.
+
+  WordPress gave this for free through `layout.contentSize` / `wideSize`. Here
+  it is one class, used by every section, so the whole site shares a single
+  measure and a single gutter.
+*/
+.shot {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+.shot--wide {
+  max-width: 1600px;
+}
+
+/* --------------------------------------------------------------- the hero
+
+   Five photographs crossfading under type that does not move.
+
+   The page is light now, but this section is not: white type over a photograph
+   needs a dark scrim under it, and that is a contrast guarantee rather than a
+   style choice. So the hero keeps its own near-black ground and its own light
+   type, and is the one place on the site where --type is deliberately not used.
+
+   Motion rules this block follows:
+   - only opacity and transform animate, so the whole thing stays composited
+   - the crossfade is a TRANSITION, not a keyframe, because tapping the dots
+     interrupts it constantly and a transition retargets from where it is
+   - exactly one image is ever being transformed: the drift is applied to the
+     active frame only
+   - none of it runs under prefers-reduced-motion, which is handled at the
+     bottom of this file along with every other motion opt-out */
+
+.hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: min(100svh, 54rem);
+  padding-block: clamp(6rem, 12vh, 9rem) clamp(4rem, 8vh, 5.5rem);
+  overflow: hidden;
+  isolation: isolate;
+  /* Behind the photographs, so a slow connection sees a dark stage rather than
+     a white flash before the first frame lands. */
+  background: #0b0d12;
+}
+
+.hero__frames {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.hero__frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-in-frame);
+}
+
+.hero__frame[data-active] {
+  opacity: 1;
+}
+
+.hero__frame img {
+  object-fit: cover;
+  /* The same grade the wall uses, so the hero and the gallery read as one shoot
+     rather than two. */
+  filter: saturate(1.06) contrast(1.04);
+  /* The drift. Starts slightly over-scaled and settles, which reads as the
+     frame breathing rather than as a zoom. Linear on purpose: an eased drift
+     accelerates visibly, and the whole point is that it should not be noticed. */
+  transform: scale(1.06);
+  transition: transform 7000ms linear;
+}
+
+.hero__frame[data-drift] img {
+  transform: scale(1);
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Two gradients, because the copy is bottom-LEFT and a purely vertical scrim
+     leaves it sitting on whatever the photograph happens to be doing at that
+     height. The first version of this had a 0.18 stop at 26% and the label
+     landed in it, over open sky. The horizontal pass is what actually earns the
+     type its ground; the vertical one keeps the header legible at the top and
+     lands the caption on near-solid dark at the foot. */
+  background:
+    linear-gradient(
+      180deg,
+      rgb(6 8 12 / 0.62) 0%,
+      rgb(6 8 12 / 0.20) 30%,
+      rgb(6 8 12 / 0.74) 68%,
+      rgb(6 8 12 / 0.96) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgb(6 8 12 / 0.78) 0%,
+      rgb(6 8 12 / 0.42) 42%,
+      rgb(6 8 12 / 0.05) 76%,
+      transparent 100%
+    );
+}
+
+.hero__shot {
+  position: relative;
+}
+
+.hero__copy {
+  max-width: 46rem;
+}
+
+.hero__label {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 1.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  /* Near-white, not orange. An earlier version set this in --signal-fill and
+     claimed a ratio against the scrim, but a scrim over a photograph has no
+     fixed luminance to measure against — the number was asserted, not known.
+     White is the one value that survives whatever frame is underneath, and the
+     brand still reads because the rule beside it stays orange. */
+  color: #fbfaf8;
+}
+
+.hero__label::before {
+  content: "";
+  width: 2.5rem;
+  height: 2px;
+  background: var(--signal-fill);
+}
+
+.hero__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: clamp(3.1rem, 11vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: #fbfaf8;
+}
+
+.hero__seat {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: clamp(0.9rem, 2.4vw, 1.15rem);
+  font-weight: 600;
+  font-stretch: 96%;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgb(251 250 248 / 0.78);
+}
+
+.hero__caption {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  /* Reserved so the tallest caption cannot shift the buttons when it swaps. */
+  min-height: 5.25rem;
+}
+
+.hero__caption-line {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  line-height: 1.45;
+  color: rgb(251 250 248 / 0.94);
+  animation: hero-caption 620ms var(--ease-in-frame) both;
+}
+
+.hero__place {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-stretch: 92%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(251 250 248 / 0.6);
+}
+
+@keyframes hero-caption {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+}
+
+.hero__controls {
+  position: absolute;
+  inset-block-end: clamp(1.5rem, 4vh, 2.5rem);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  display: flex;
+  gap: 0.55rem;
+}
+
+@media (min-width: 1024px) {
+  .hero__controls {
+    inset-inline: auto clamp(2rem, 5vw, 4rem);
+    translate: none;
+  }
+}
+
+.hero__dot {
+  position: relative;
+  width: 2.5rem;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgb(251 250 248 / 0.32);
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    transform 160ms var(--ease-in-frame);
+}
+
+/* The bar is 3px tall, which is not a touch target. This gives it 44px without
+   changing what is drawn. */
+.hero__dot::after {
+  content: "";
+  position: absolute;
+  inset: -20px -3px;
+}
+
+.hero__dot[data-active] {
+  background: var(--signal-fill);
+}
+
+.hero__dot:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__dot:hover {
+    background: rgb(251 250 248 / 0.62);
+  }
+
+  .hero__dot[data-active]:hover {
+    background: var(--signal-fill);
+  }
+}
+
+
+/* ------------------------------------------------------------- the frame
+
+   A frame is one shot: a photograph, held to an aspect, graded, with the ground
+   showing through its edges. Frames never get rounded corners or drop shadows;
+   they are exposures, not cards. */
+
+.frame {
+  position: relative;
+  overflow: clip;
+  background: var(--ink-800);
+  border: 1px solid var(--hairline);
+}
+
+.frame > img,
+.frame > picture > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame--scope {
+  aspect-ratio: var(--scope);
+}
+
+.frame--academy {
+  aspect-ratio: 4 / 3;
+}
+
+.frame--portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.frame--tall {
+  aspect-ratio: 2 / 3;
+}
+
+/*
+  THE GRADE
+
+  The photographs used to be graded at build time by a script. Here the image
+  optimiser resizes the ungraded source instead and the grade is applied in CSS
+  — which has the additional benefit of reaching photographs campaign staff
+  upload themselves. A picture posted from a rally at 7pm still belongs to the
+  set.
+
+  These values descend from the build-time grade, which was:
+
+      saturation 0.84   brightness 0.97   contrast 1.10
+      black point -12   warmth rgba(255,176,92,0.04) in soft-light
+
+  They are not identical. The pipeline applied contrast as a linear transform
+  with a lifted black point and laid a warm tile over it in soft-light; CSS
+  filters have no equivalent of either, so saturation and contrast are pulled
+  back slightly to land in the same place by eye. If the two ever need to agree
+  exactly, the grading script is in git history — it was removed along with the
+  WordPress theme it was written for.
+*/
+.frame img,
+.wall img,
+.entry-content img {
+  filter: saturate(0.86) contrast(1.06) brightness(0.97);
+}
+
+/* An exposed edge: the photograph fades into the ground on one side instead of
+   stopping at a border. */
+.frame--bleed {
+  border: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  font-stretch: 92%;
+  letter-spacing: 0.01em;
+  color: var(--type-mid);
+}
+
+/* --------------------------------------------------------------- the wall
+
+   The photograph library, as a grid of frames. Its job is volume: proof that
+   the candidate has actually stood in these places. */
+
+/*
+   A MOSAIC, NOT A CONTACT SHEET.
+
+   Twelve photographs at one identical crop is how a camera roll looks, not how
+   a body of work looks — and this library is the campaign's least copyable
+   asset, so presenting it as uniform thumbnails was the flattest possible use
+   of the best thing it owns.
+
+   Six columns, and a repeating group of three tiles that fills a 6x2 block
+   exactly: one tile at 4x2 and two at 2x1 comes to 8 + 2 + 2 = 12 cells, which
+   is 6x2 with nothing left over. Twelve photographs is four such groups, so the
+   grid closes flush at the bottom with no orphan row and no hole — that is
+   arithmetic rather than dense-flow luck, and it holds for any multiple of
+   three.
+
+   The wide tile alternates side between groups, which is what stops a composed
+   grid from reading as a template. Everything else — the crop, the grade, the
+   hover, the lightbox — is unchanged.
+*/
+.wall {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  /*
+     Rows are sized by the photographs, not by a guess.
+
+     This was a clamp, and at any real desktop width it resolved to about 122px
+     against a 412px small frame — every picture in the mosaic was landing at
+     3.35:1. The comment on the mobile fallback below already names that as the
+     failure it exists to avoid: "a letterbox slot too small to read a face in".
+     Desktop was doing it too, and worse, on the campaign's least copyable
+     asset.
+
+     With auto rows, each small frame states 3:2 and the row takes its height
+     from it. The wide frame spans two of those rows and therefore lands at
+     3:2 as well — 4 columns is exactly twice 2 columns, and two rows plus the
+     gap between them is exactly twice one row. The proportion holds at every
+     width without a single magic number.
+  */
+  grid-auto-rows: auto;
+  /* Dense is load-bearing, not a tidy-up. The wide frames name their own start
+     column so the composition alternates, and once one is placed the auto
+     cursor has moved past the two-column slot beside it — without dense the
+     small frames cannot reach back into it and every other group leaves an
+     empty row. Measured: 79% coverage without this line, flush with it. */
+  grid-auto-flow: dense;
+  gap: 2px;
+}
+
+.wall figure {
+  position: relative;
+  margin: 0;
+  grid-column: span 2;
+  grid-row: span 1;
+  /* The crop the library was processed for, and what makes the rows measure. */
+  aspect-ratio: 3 / 2;
+  overflow: clip;
+  background: var(--ink-800);
+}
+
+/*
+   The wide frame: left in odd groups, right in even ones.
+
+   It states 3:2 as well, and that is required rather than redundant. Left to
+   `auto` the frame has no height constraint, so the photograph inside drives
+   it — a portrait original produced an 826x1247 frame and dragged its two rows
+   out to 622px each, which then stretched every neighbour. Because 4 columns
+   is exactly twice 2 columns, and 2 rows plus their gap is exactly twice 1 row,
+   both sizes asking for 3:2 resolve to the same row height instead of fighting.
+*/
+.wall figure:nth-child(6n + 1) {
+  grid-column: 1 / span 4;
+  grid-row: span 2;
+  aspect-ratio: 3 / 2;
+}
+
+.wall figure:nth-child(6n + 4) {
+  grid-column: 3 / span 4;
+  grid-row: span 2;
+  aspect-ratio: 3 / 2;
+}
+
+/*
+   Below the mosaic's useful width a six-column grid makes every frame a
+   letterbox slot too small to read a face in. Two columns at the original 3:2,
+   which is the crop the photographs were processed for.
+*/
+@media (max-width: 47.99rem) {
+  .wall {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  .wall figure,
+  .wall figure:nth-child(6n + 1),
+  .wall figure:nth-child(6n + 4) {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: 3 / 2;
+  }
+}
+
+.wall img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    scale var(--dissolve) var(--ease-in-frame),
+    filter var(--dissolve) var(--ease-in-frame);
+}
+
+.wall button,
+.wall a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* Hover lifts the grade toward full colour: the picture "comes up" under the
+   cursor. Hover is an enhancement — nothing here is only available on hover. */
+@media (hover: hover) {
+  .wall :where(a, button):hover img,
+  .wall :where(a, button):focus-visible img {
+    scale: 1.04;
+    filter: saturate(1.02) contrast(1.02) brightness(1.04);
+  }
+}
+
+/*
+   The gallery packs the whole library, and it stays uniform on purpose: the
+   argument there is VOLUME — six constituencies, thirty wards, evidence of
+   having actually been there — and forty-five frames all cut the same way is
+   what makes that argument. Composition would turn a body of evidence into a
+   selection, and a selection invites the question of what was left out.
+
+   So this resets the mosaic's spans rather than inheriting them.
+*/
+.wall--dense {
+  gap: 1px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  grid-auto-rows: auto;
+}
+
+.wall--dense figure,
+.wall--dense figure:nth-child(6n + 1),
+.wall--dense figure:nth-child(6n + 4) {
+  grid-column: auto;
+  grid-row: auto;
+  aspect-ratio: 3 / 2;
+}
+
+/* ------------------------------------------------------------- the ledger
+
+   Promises, as a numbered ledger rather than a row of icon cards. Icon cards
+   were the anti-reference for this design: three circles with generic glyphs is
+   the single clearest tell of a template. A promise is a line item with a
+   number, a claim, a bound, and the article of the constitution it rests on. */
+
+.ledger {
+  display: grid;
+  gap: 1px;
+  background: var(--hairline);
+  border-block: 1px solid var(--hairline);
+}
+
+.ledger__item {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 2.5rem);
+  padding: clamp(1.75rem, 4vw, 3rem) 0;
+  background: var(--screen);
+}
+
+@media (min-width: 768px) {
+  .ledger__item {
+    grid-template-columns: 4.5rem 1fr minmax(0, 20rem);
+    align-items: start;
+  }
+}
+
+.ledger__index {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.14em;
+  color: var(--signal);
+  padding-top: 0.4rem;
+}
+
+.ledger__claim {
+  margin: 0;
+  font-size: clamp(1.375rem, 2.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.ledger__detail {
+  margin: 0.85rem 0 0;
+  color: var(--type-mid);
+  font-size: 1rem;
+  line-height: 1.66;
+}
+
+/* The bound. Every promise states what it is limited by, in the same place, in
+   the same quiet type. It is the most trustworthy element on the page. */
+.ledger__bound {
+  margin: 0;
+  padding-top: 0.35rem;
+  font-size: 0.8125rem;
+  font-stretch: 92%;
+  line-height: 1.6;
+  color: var(--type-low);
+  border-top: 1px solid var(--hairline);
+}
+
+@media (min-width: 768px) {
+  .ledger__bound {
+    border-top: 0;
+    border-inline-start: 1px solid var(--hairline);
+    padding-inline-start: 1.75rem;
+    padding-top: 0.5rem;
+  }
+}
+
+.ledger__bound strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--type-mid);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- the counter
+
+   Numbers the campaign is willing to be held to. Tabular, large, quiet label
+   underneath. Never a raw sign-up figure: the register only publishes
+   OTP-verified counts, and this component exists to display those. */
+
+/*
+   These were three bordered cells in a bordered grid — which this design's own
+   rules forbid ("repeating content is a ruled list or a photographic grid,
+   never a grid of boxes") and which is also the stock metric-card template that
+   every product page ships. Both problems have the same fix: delete the boxes.
+
+   What is left is the system's own device, a ruled list, and the figures move
+   up into the display register where evidence this good belongs. The rule above
+   each figure is the only structure, and it is the same hairline the rest of
+   the page is built from.
+*/
+.counter {
+  display: grid;
+  /* One column, stacked. auto-fit put three figures into two tracks in the
+     narrow column this actually sits in, which leaves an orphan on a second
+     row — and a figure this size wants the width anyway. Stacked and ruled is
+     the ledger device the rest of the design already uses for a short list of
+     related facts. */
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+}
+
+/*
+   minmax(0, ...) on BOTH tracks, not just the value column — this is required
+   rather than tidy. A CSS Grid track's default minimum is auto, which means
+   "never shrink below the content's own natural width", so at a narrow
+   viewport the auto-sized value column was demanding the full unbroken width
+   of "238,528" regardless of how little room was actually available, and the
+   grid blew out past the page edge instead of yielding to it. Found on a real
+   390px capture: the figure was clipped to "238,5", "30" was clipped away
+   entirely, "559" showed only "5" — silent horizontal overflow, invisible in
+   any check that only measures document.scrollWidth against a desktop
+   viewport, which this project's checks had only ever run at.
+*/
+.counter__cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  align-items: baseline;
+  column-gap: clamp(1rem, 2.5vw, 2rem);
+  padding-block: clamp(1.1rem, 2.2vw, 1.5rem);
+  border-block-start: 1px solid var(--hairline);
+}
+
+/* The figure sits to the right of its own name, so the numerals stack into a
+   column the eye can compare down. Tabular figures make that column true. */
+.counter__figure {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: end;
+}
+
+.counter__label {
+  grid-column: 1;
+  align-self: start;
+}
+
+.counter__note {
+  grid-column: 1;
+}
+
+.counter__value {
+  display: block;
+  /* Archivo's width axis is where this design's typographic range comes from,
+     and the figures are the one place it is worth spending at full expansion:
+     a wide numeral reads as engraved rather than typed. */
+  font-family: var(--font-display);
+  /* The floor was 2.5rem (40px) and never actually reachable below about
+     667px wide, because 6vw only crosses it above that width — every phone
+     in the audience was pinned at the desktop-scale floor with no room to
+     shrink, which is the other half of the overflow above. 1.9rem is small
+     enough to clear a 375px screen with the grid fix above and still reads
+     as a headline figure, not a footnote. */
+  font-size: clamp(1.9rem, 6vw, 4.25rem);
+  font-weight: 800;
+  font-stretch: 118%;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--type);
+}
+
+.counter__value--signal {
+  color: var(--signal);
+}
+
+.counter__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--type-mid);
+}
+
+.counter__note {
+  display: block;
+  margin: 0;
+  max-width: 30ch;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--type-low);
+}
+
+/* ---------------------------------------------------------- the news log
+
+   Posts as a log: date, category, title, one line. No thumbnails-in-cards, no
+   "read more" buttons. The date is the structure. */
+
+.log {
+  display: grid;
+  gap: 0;
+}
+
+.log__item {
+  display: grid;
+  gap: 0.5rem clamp(1.5rem, 4vw, 3rem);
+  padding-block: clamp(1.5rem, 3vw, 2.25rem);
+  border-top: 1px solid var(--hairline);
+}
+
+@media (min-width: 768px) {
+  .log__item {
+    grid-template-columns: 10rem 1fr;
+    align-items: baseline;
+  }
+}
+
+.log__item:last-child {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.log__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--type-low);
+}
+
+.log__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.log__title a {
+  color: var(--type);
+  text-decoration: none;
+  background-image: linear-gradient(var(--signal), var(--signal));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition:
+    background-size var(--cut) var(--ease-in-frame),
+    color var(--cut) linear;
+}
+
+.log__title a:hover,
+.log__title a:focus-visible {
+  color: var(--signal);
+  background-size: 100% 1px;
+}
+
+.log__excerpt {
+  margin: 0.5rem 0 0;
+  color: var(--type-mid);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* -------------------------------------------------------------- buttons
+
+   Two only. A signal button, which is the one thing on the page a visitor is
+   asked to do, and a ghost, which is everything else. Both clear 44px.
+
+   The signal button's hover goes to white rather than to a darker yellow: on a
+   dark ground, brightening reads as pressing toward the light, and it keeps the
+   text black at 20:1 instead of dropping contrast. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 1.05rem 2rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: var(--signal);
+  color: var(--screen);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--cut) linear,
+    box-shadow var(--cut) linear,
+    color var(--cut) linear,
+    translate var(--cut) var(--ease-in-frame);
+}
+
+/* Hover goes DARKER, not lighter. On the old black ground the button went to
+   white because that was the brightest thing available; on paper the brightest
+   thing available is the page itself, so lightening it made the control vanish
+   at the exact moment a cursor was on it. */
+.btn:hover,
+.btn:focus-visible {
+  background: var(--signal-deep);
+  color: var(--screen);
+  box-shadow: var(--bloom-tight);
+  translate: 0 -1px;
+}
+
+/* The register button. The single most important control on the site, so it
+   carries a standing bloom — it looks lit even before it is touched. */
+.btn--register {
+  box-shadow: var(--bloom-tight);
+}
+
+.btn--register::after {
+  content: "→";
+  font-weight: 700;
+  transition: translate var(--cut) var(--ease-in-frame);
+}
+
+.btn--register:hover::after {
+  translate: 3px 0;
+}
+
+/* Ghost. A hairline box that lights up. */
+.btn--ghost {
+  background: transparent;
+  color: var(--type);
+  border-color: var(--hairline-strong);
+  box-shadow: none;
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  background: transparent;
+  color: var(--signal);
+  border-color: var(--hairline-lit);
+  box-shadow: none;
+}
+
+/* The ghost button lives on the light page everywhere except the hero, where
+   the ground under it is the scrim. Its normal --type/--hairline pair would be
+   near-invisible there, so this variant restates both against dark. */
+.btn--on-dark {
+  color: #fbfaf8;
+  border-color: rgb(251 250 248 / 0.34);
+}
+
+.btn--on-dark:hover,
+.btn--on-dark:focus-visible {
+  background: rgb(251 250 248 / 0.1);
+  color: #fbfaf8;
+  border-color: rgb(251 250 248 / 0.6);
+}
+
+.btn--small {
+  min-height: 2.5rem;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------------- header and nav */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgb(251 250 248 / 0.88);
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--cut) linear,
+    border-color var(--cut) linear;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .site-header {
+    background: rgb(251 250 248 / 0.72);
+    backdrop-filter: blur(14px) saturate(1.1);
+  }
+}
+
+/* Set once the page has moved: the bar commits to a ground so navigation stays
+   legible over a photograph.
+
+   It starts far more opaque than the dark version did. Dark type on a
+   translucent light bar over a bright photograph is the one combination with no
+   floor on its contrast — the old bar could afford 0.55 because white type over
+   a darkened photo degrades gracefully, and this one cannot. */
+.site-header.is-set {
+  background: rgb(251 250 248 / 0.97);
+  border-bottom-color: var(--hairline);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .site-header.is-set {
+    background: rgb(251 250 248 / 0.92);
+  }
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 0.75rem;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-stretch: 96%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--type-mid);
+  text-decoration: none;
+  transition: color var(--cut) linear;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--signal);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--type);
+}
+
+/* The mobile drawer is a full black frame, not a translucent sheet — over a
+   photograph a translucent menu is unreadable. */
+.site-nav__toggle {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--type);
+  cursor: pointer;
+}
+
+.site-nav__drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: var(--screen);
+  overflow-y: auto;
+}
+
+.site-nav__drawer a {
+  min-height: 56px;
+  font-size: 1.375rem;
+  letter-spacing: 0.04em;
+  color: var(--type);
+}
+
+@media (min-width: 900px) {
+  .site-nav__toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .site-nav--bar {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ the ticker
+
+   A single strip of short lines moving slowly across a hairline band. It is the
+   one moving thing on the page and it carries real information: where the
+   campaign has been.
+
+   It stops for anyone who asks it to, and it is duplicated in the markup so the
+   loop has no seam. The copy is aria-hidden on the duplicate only. */
+
+.ticker {
+  position: relative;
+  display: flex;
+  overflow: clip;
+  padding-block: 0.9rem;
+  border-block: 1px solid var(--hairline);
+  background: var(--ink-800);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.ticker__run {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 3rem;
+  padding-inline-end: 3rem;
+  white-space: nowrap;
+  animation: ticker-run 46s linear infinite;
+}
+
+.ticker:hover .ticker__run,
+.ticker:focus-within .ticker__run {
+  animation-play-state: paused;
+}
+
+.ticker__item {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-stretch: 90%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--type-mid);
+}
+
+.ticker__item::before {
+  content: "◦";
+  margin-inline-end: 3rem;
+  color: var(--signal);
+}
+
+@keyframes ticker-run {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker__run {
+    animation: none;
+  }
+  .ticker {
+    overflow-x: auto;
+  }
+}
+
+/* ---------------------------------------------------------- the join band
+
+   The conversion band. It is the only place on the site that gets a glow behind
+   it, because it is the only place the visitor is asked for something. */
+
+.join {
+  position: relative;
+  overflow: clip;
+  text-align: center;
+  background: var(--ink-800);
+  border-block: 1px solid var(--hairline);
+}
+
+.join::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: -60%;
+  height: 140%;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(244 123 32 / 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.join__inner {
+  position: relative;
+  padding-block: clamp(4rem, 9vw, 7.5rem);
+}
+
+.join__title {
+  margin: 0 auto;
+  max-width: 30rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.join__lead {
+  margin: 1.25rem auto 0;
+  max-width: 34rem;
+  color: var(--type-mid);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+}
+
+.join__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.25rem;
+}
+
+/* The honest note under the button: what happens to a phone number. It is
+   deliberately not hidden behind a link. */
+.join__note {
+  margin: 1.5rem auto 0;
+  max-width: 30rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--type-low);
+}
+
+/* -------------------------------------------------------------- the foot */
+
+.site-footer {
+  border-top: 1px solid var(--hairline);
+  background: var(--screen);
+  padding-block: clamp(3rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem);
+  font-size: 0.9375rem;
+  color: var(--type-mid);
+}
+
+.site-footer a {
+  color: var(--type-mid);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline-strong);
+  transition:
+    color var(--cut) linear,
+    border-color var(--cut) linear;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--signal);
+  border-color: var(--hairline-lit);
+}
+
+.site-footer h2,
+.site-footer h3 {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--type-low);
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  .site-footer__grid {
+    grid-template-columns: 38% 1fr 1fr;
+  }
+}
+
+/* The party lockup: the footer's statement of which ticket he stands on. It
+   sits on its own ground, because a mark on a near-black page needs a plate to
+   read against. */
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--hairline);
+  background: var(--ink-700);
+}
+
+.lockup span {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--type-mid);
+}
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.8125rem;
+  color: var(--type-low);
+}
+
+/* ------------------------------------------------------------- long form
+
+   Post and page bodies. The measure is deliberately narrow: 66 characters on a
+   dark ground, because light type on dark fatigues faster than the reverse and
+   a short line is the cheapest fix. */
+
+.entry-content {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--type);
+  max-width: 40rem;
+}
+
+.entry-content > * + * {
+  margin-top: 1.35em;
+}
+
+.entry-content h2 {
+  margin-top: 2.5em;
+  font-size: clamp(1.625rem, 3vw, 2.125rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.entry-content h3 {
+  margin-top: 2em;
+  font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+}
+
+.entry-content a {
+  color: var(--signal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.entry-content a:hover {
+  color: #fff;
+}
+
+.entry-content blockquote {
+  margin-inline: 0;
+  padding-inline-start: 1.5rem;
+  border-inline-start: 2px solid var(--signal);
+  font-size: 1.1875rem;
+  color: var(--type);
+}
+
+.entry-content ul,
+.entry-content ol {
+  padding-inline-start: 1.35rem;
+  list-style: revert;
+}
+
+.entry-content li + li {
+  margin-top: 0.5rem;
+}
+
+.entry-content hr {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin-block: 3rem;
+}
+
+/* Any wide block that could push the page sideways scrolls inside itself. */
+.entry-content :where(table, pre) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* ------------------------------------------------------------- the unfold
+
+   Sections arrive out of black: a short rise and a fade, staggered, once.
+
+   THE RULE THAT MAKES THIS SAFE: every way out of the hidden state is CSS, and
+   none of them depends on JavaScript having run correctly. Reduced motion is
+   the media query below. Scripting-off is a <noscript> rule in the head. A
+   React side that never mounts is a stylesheet the head script injects on a
+   timer. All three cancel the rule below with `!important`.
+
+   `html.js-reveal` is rendered by the server and never removed by anything.
+   Editing it from script is what caused a hydration mismatch on every slow
+   load — see src/components/site/reveal-bootstrap.ts before changing this.
+   A reveal that can hide content permanently is a bug, not an animation. */
+
+html.js-reveal [data-reveal] {
+  opacity: 0;
+  translate: 0 18px;
+  transition:
+    opacity var(--dissolve) var(--ease-in-frame),
+    translate var(--dissolve) var(--ease-in-frame);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, translate;
+}
+
+html.js-reveal [data-reveal].is-in {
+  opacity: 1;
+  translate: 0 0;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js-reveal [data-reveal] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------- the marked block
+
+   A staff-facing warning that survives into production if nobody acts on it.
+   Used for the manifesto lines that still need the candidate's sign-off. */
+
+/* Alarm red, not the brand orange it used to use. This marker exists to be
+   noticed by staff before launch, and once the accent itself became orange a
+   warm dashed box read as decoration rather than as a flag. */
+.to-replace {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  border: 1px dashed var(--alarm);
+  background: rgb(255 107 107 / 0.07);
+}
+
+.to-replace::before {
+  content: "Needs sign-off before launch";
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--alarm);
+}
+
+/* ------------------------------------------------------------- lightbox
+
+   The overlay is nearly opaque rather than translucent: a photograph judged
+   through a half-visible page behind it is not being shown. */
+
+/* The display rule is scoped to [open], and that is load-bearing rather than
+   tidy. A <dialog> is display:none while closed by UA stylesheet; setting
+   display:grid on the element itself overrides that, so the closed dialog was
+   being laid out on every page — a fixed, z-index 90 box sitting in the top
+   left corner and swallowing clicks over the site logo. On a near-black page it
+   was invisible and nobody noticed. On paper it is a dark rectangle over the
+   masthead, which is the only reason it was ever found. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgb(3 4 7 / 0.96);
+  border: 0;
+}
+
+.lightbox[open] {
+  display: grid;
+  animation: lightbox-in 200ms var(--ease-in-frame);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  /* Scoped to [open] for the same reason the display rule is: a backdrop-filter
+     on a closed dialog still forces the compositor to keep a filtered layer. */
+  .lightbox[open] {
+    backdrop-filter: blur(6px);
+  }
+}
+
+.lightbox img {
+  max-width: min(100%, 84rem);
+  max-height: 88svh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid var(--hairline);
+  /* The graded look is a page treatment. A photograph being examined at size is
+     shown as it was taken. */
+  filter: none;
+}
+
+.lightbox__close {
+  position: absolute;
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  /* The overlay behind this is deliberately near-black whatever the page does,
+     so the control on top of it keeps light type rather than following --type. */
+  background: rgb(5 6 10 / 0.8);
+  color: #fbfaf8;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 2px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color var(--cut) linear,
+    border-color var(--cut) linear;
+}
+
+.lightbox__close:hover,
+.lightbox__close:focus-visible {
+  color: var(--signal);
+  border-color: var(--hairline-lit);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------ utilities */
+
+.u-measure {
+  max-width: 34rem;
+}
+
+.u-lead {
+  font-size: clamp(1.0625rem, 1.7vw, 1.25rem);
+  line-height: 1.66;
+  color: var(--type-mid);
+}
+
+.u-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--signal);
+}
+
+.u-quiet {
+  color: var(--type-low);
+}
+
+.u-title {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.u-section-head {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------- print
+
+   Campaign staff print pages for meetings where there is no power. Invert to
+   ink on paper and drop everything that only exists to make a screen glow. */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .ticker,
+  .stage__scrim,
+  .stage__cue,
+  .join::before {
+    display: none !important;
+  }
+
+  .reel {
+    padding-block: 1.5rem;
+    border-color: #999;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  .frame img,
+  .wall img,
+  .entry-content img {
+    filter: none;
+  }
+}
+
+/* ---------------------------------------------------------------- pledge
+
+   The candidate's own statement, set as a signed letter.
+
+   The left rule is the only structural device: it runs the full height of the
+   text and carries the party colour at full strength, which is legal here
+   because it is a rule and not type. Everything else is typography and space —
+   no card, no border, no tint. A statement in a box reads as a pull-quote
+   somebody else chose; a statement on the page reads as the person talking. */
+
+/*
+   The edge is the system's lit rule turned vertical, not a coloured bar.
+
+   A 3px solid accent border down the side of a statement is the generic
+   pull-quote costume, and this design already owns a better answer: a hairline
+   lit at one end and faded out, so an edge reads as a light source rather than
+   a stripe. Same device as .rule-lit, same token, rotated.
+*/
+/*
+   Two columns from 64rem up, because at desktop width this was 864px of
+   statement against 456px of nothing. The measure is not the thing to change —
+   58ch is where the prose should stay — so the second column carries the
+   portrait instead, and the section fills its container with content rather
+   than with a stretched line length.
+*/
+.pledge {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  margin: 0;
+  padding-inline-start: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+@media (min-width: 64rem) {
+  .pledge {
+    grid-template-columns: minmax(0, 1fr) clamp(17rem, 24vw, 22rem);
+    align-items: start;
+  }
+
+  /* The statement and its signature stay in column one; the portrait spans
+     both rows beside them so its top aligns with the opening line. */
+  .pledge__body,
+  .pledge__sign {
+    grid-column: 1;
+  }
+
+  .pledge__portrait {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+.pledge::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--signal-fill) 0%,
+    var(--hairline-lit) 18%,
+    var(--hairline) 62%,
+    transparent 100%
+  );
+}
+
+.pledge__body {
+  margin: 0;
+  max-width: 58ch;
+  /* A blockquote, so the UA adds quotation semantics — but not quotation
+     marks, which would make a direct statement look like it was reported. */
+  quotes: none;
+}
+
+.pledge__body p {
+  margin: 0 0 1.35em;
+  font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+  line-height: 1.68;
+  color: var(--type-mid);
+}
+
+.pledge__opener {
+  font-size: clamp(1.375rem, 2.4vw, 1.875rem) !important;
+  line-height: 1.4 !important;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--type) !important;
+}
+
+.pledge__body p:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--type);
+}
+
+.pledge__portrait {
+  position: relative;
+  overflow: clip;
+  background: var(--ink-800);
+  aspect-ratio: 3 / 4;
+}
+
+.pledge__portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The same grade as the wall and the hero, so he sits in the same light as
+     the photographs further down the page rather than looking pasted on. */
+  filter: saturate(0.86) contrast(1.06) brightness(0.97);
+}
+
+.pledge__sign {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-block-start: 2.25rem;
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--hairline);
+}
+
+.pledge__name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-stretch: 104%;
+  letter-spacing: -0.015em;
+  color: var(--type);
+}
+
+.pledge__role {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--type-low);
+}
+
+/* -------------------------------------------------------------- mandate
+
+   The four commitments as a disclosure list. See MandateAccordion.tsx for why
+   this pattern is used here and deliberately not on /manifesto. */
+
+.mandate {
+  border-block-start: 1px solid var(--hairline);
+}
+
+.mandate__item {
+  border-block-end: 1px solid var(--hairline);
+}
+
+.mandate__heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.mandate__trigger {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.9rem, 2vw, 1.6rem);
+  width: 100%;
+  /* 44px of target even before the text, and the padding is the target rather
+     than a transparent pseudo-element, because the whole row is the control. */
+  padding-block: clamp(1.35rem, 2.4vw, 1.9rem);
+  padding-inline: 0;
+  background: none;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+  color: var(--type);
+  transition: color 160ms ease;
+}
+
+.mandate__index {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  color: var(--signal);
+  transition: color 160ms ease;
+}
+
+.mandate__claim {
+  font-family: var(--font-display);
+  font-size: clamp(1.1875rem, 2.2vw, 1.625rem);
+  font-weight: 700;
+  font-stretch: 100%;
+  line-height: 1.24;
+  letter-spacing: -0.017em;
+}
+
+/* The mark: a plus that loses its vertical bar rather than swapping glyph. */
+.mandate__mark {
+  position: relative;
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.mandate__mark::before,
+.mandate__mark::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--type-low);
+  translate: 0 -50%;
+  transition:
+    rotate 260ms var(--ease-in-frame),
+    opacity 200ms ease,
+    background 160ms ease;
+}
+
+.mandate__mark::after {
+  rotate: 90deg;
+}
+
+.mandate__item[data-open] .mandate__mark::after {
+  rotate: 0deg;
+  opacity: 0;
+}
+
+.mandate__item[data-open] .mandate__mark::before,
+.mandate__item[data-open] .mandate__mark::after {
+  background: var(--signal);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mandate__trigger:hover .mandate__claim {
+    color: var(--signal);
+  }
+
+  .mandate__trigger:hover .mandate__mark::before,
+  .mandate__trigger:hover .mandate__mark::after {
+    background: var(--signal);
+  }
+}
+
+.mandate__trigger:active .mandate__claim {
+  /* The row is wide, so scaling the whole control looks broken. Nudging the
+     claim is enough to say the press registered. */
+  translate: 2px 0;
+}
+
+/*
+   0fr to 1fr rather than a measured pixel height: nothing has to be read from
+   the DOM first, and it stays correct when the text rewraps at another width.
+*/
+.mandate__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms var(--ease-in-frame);
+}
+
+.mandate__item[data-open] .mandate__panel {
+  grid-template-rows: 1fr;
+}
+
+.mandate__panel-inner {
+  overflow: hidden;
+  /* Fades slightly behind the height so the text does not appear to be pushed
+     out of a slot it has not finished making yet. */
+  opacity: 0;
+  transition: opacity 200ms ease 40ms;
+}
+
+.mandate__item[data-open] .mandate__panel-inner {
+  opacity: 1;
+}
+
+/*
+   From 64rem the promise and its limit sit side by side.
+
+   Before this the row was 1240px wide and the paragraph inside it was 565px,
+   so every open panel carried about 675px of empty page. Widening the prose
+   was not the fix — it is at its measure already. Facing the two halves is,
+   and it happens to be the argument: this campaign's whole claim is that a
+   promise is only worth the limit printed beside it, and now they are beside
+   it rather than stacked where the limit reads as a footnote.
+*/
+@media (min-width: 64rem) {
+  .mandate__panel-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+    padding-inline-start: calc(0.75rem + clamp(0.9rem, 2vw, 1.6rem));
+  }
+
+  /* The indent moves to the grid, so neither child re-applies it. */
+  .mandate__panel-inner > .mandate__detail {
+    padding-inline-start: 0;
+    margin-bottom: 0;
+  }
+
+  .mandate__panel-inner > .mandate__limit {
+    margin-inline-start: 0;
+  }
+}
+
+.mandate__detail {
+  margin: 0 0 1.5rem;
+  max-width: 58ch;
+  padding-inline-start: calc(0.75rem + clamp(0.9rem, 2vw, 1.6rem));
+  font-size: clamp(1rem, 1.3vw, 1.0625rem);
+  line-height: 1.7;
+  color: var(--type-mid);
+}
+
+.mandate__limit {
+  max-width: 58ch;
+  margin-block-end: clamp(1.35rem, 2.4vw, 1.9rem);
+  margin-inline-start: calc(0.75rem + clamp(0.9rem, 2vw, 1.6rem));
+  padding-inline-start: 1.1rem;
+  border-inline-start: 2px solid var(--hairline-strong);
+}
+
+.mandate__limit-label {
+  display: block;
+  margin-block-end: 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--type-low);
+}
+
+.mandate__limit p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.62;
+  color: var(--type-low);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The panel still opens and closes — that is the function, not decoration.
+     What goes is the travel: the height snaps, and only the fade remains to
+     say something changed. */
+  .mandate__panel,
+  .mandate__panel-inner,
+  .mandate__mark::before,
+  .mandate__mark::after {
+    transition-duration: 0.01ms;
+  }
+
+  .mandate__trigger:active .mandate__claim {
+    translate: none;
+  }
+}
