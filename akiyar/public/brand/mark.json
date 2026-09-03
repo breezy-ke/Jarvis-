@@ -1,0 +1,11 @@
+{
+  "source": "updated Images/Ekusi Logo.jpeg",
+  "sourceSize": "1280x1170",
+  "colours": {
+    "plate": "#025835",
+    "diamond": "#d6daa7",
+    "lettering": "#f0f0f0"
+  },
+  "inkCoverage": "17.3%",
+  "change": "plate knocked out and its drop shadow with it; edge pixels decontaminated of plate green; no colour altered"
+}
